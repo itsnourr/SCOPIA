@@ -1,0 +1,52 @@
+/* Galleria main container */
+.custom-galleria {
+  max-width: 700px;       /* Scale down a bit */
+  margin: 2rem auto;      /* Center with some spacing */
+  border-radius: 12px;    /* Rounded corners */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15); /* Soft shadow */
+  overflow: hidden;       /* Keep images inside rounded corners */
+}
+
+/* Main image */
+.custom-galleria .p-galleria-item img {
+  width: 100%;
+  height: 400px;           /* Slightly smaller */
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.custom-galleria .p-galleria-item img:hover {
+  transform: scale(1.03);  /* Subtle zoom on hover */
+}
+
+/* Thumbnails */
+.custom-galleria .p-galleria-thumbnail-wrapper img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.custom-galleria .p-galleria-thumbnail-wrapper img:hover {
+  transform: scale(1.1);   /* Zoom on hover for thumbnails */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.custom-galleria .p-galleria-prev,
+.custom-galleria .p-galleria-next {
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-galleria .p-galleria-prev .pi,
+.custom-galleria .p-galleria-next .pi {
+  font-size: 1.5rem;  /* make the icon visible */
+  color: white;
+}
+

@@ -1,0 +1,20 @@
+/* HomeScreen.css */
+
+/* Container of each item in grid */
+.case-item {
+  flex: 1 1 calc(33.333% - 1rem); /* 3 per row, responsive */
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+/* DataView grid wrapper */
+.p-dataview .p-dataview-content.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* align items to start */
+}
+
+/* Make cards full width inside their flex item */
+.case-item .p-card {
+  width: 100%;
+}

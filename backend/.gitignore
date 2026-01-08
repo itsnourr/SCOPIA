@@ -1,0 +1,50 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Application Specific ###
+uploads/
+src/main/resources/keystore.p12
+*.log
+
+# Environment variables and encrypted keys - NEVER commit these!
+.env
+*.sam
+*.bin
+config/keys.sam
+config/keys.bin
+config/hmac.sam
+config/hmac.bin
+config/*.sam
+config/*.bin
+
