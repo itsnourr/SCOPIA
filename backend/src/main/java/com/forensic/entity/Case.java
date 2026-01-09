@@ -27,6 +27,24 @@ public class Case {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(length = 20) // e.g., 'open' or 'archived'
+    private String status;
+
+    @Column(name = "team_assigned_id")
+    private Integer teamAssignedId;
+
+    @Column(length = 255)
+    private String location;
+
+    @Column(length = 100)
+    private String coordinates;
+
+    @Column(name = "report_date")
+    private LocalDateTime reportDate;
+
+    @Column(name = "crime_time")
+    private LocalDateTime crimeTime;
     
     @PrePersist
     protected void onCreate() {
