@@ -18,10 +18,10 @@ public class Suspect {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "suspect_id")
-    private Integer suspectId;
+    private Long suspectId;
 
     @Column(name = "case_id", nullable = false)
-    private Integer caseId;
+    private Long caseId;
 
     @Column(name = "full_name", nullable = false, length = 255)
     private String fullName;

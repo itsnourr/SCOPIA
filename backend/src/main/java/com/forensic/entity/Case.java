@@ -32,7 +32,7 @@ public class Case {
     private String status;
 
     @Column(name = "team_assigned_id")
-    private Integer teamAssignedId;
+    private Long teamAssignedId;
 
     @Column(length = 255)
     private String location;

@@ -15,11 +15,11 @@ public class Node {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "node_id")
-    private Integer nodeId;
+    private Long nodeId;
 
     @Column(name = "node_type", nullable = false, length = 10)
     private String nodeType; // e.g., "SUSPECT"
 
     @Column(name = "node_reference", nullable = false)
-    private Integer nodeReference; // e.g., suspect_id
+    private Long nodeReference; // e.g., suspect_id
 }

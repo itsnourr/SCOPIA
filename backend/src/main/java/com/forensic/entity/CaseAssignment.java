@@ -20,7 +20,7 @@ public class CaseAssignment {
     private Long id; // surrogate key since composite PK is avoided in JPA best practice
 
     @Column(name = "case_id", nullable = false)
-    private Integer caseId;
+    private Long caseId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;

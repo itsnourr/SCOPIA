@@ -17,14 +17,14 @@ public class CaseAssignmentService {
     private final CaseAssignmentRepository assignmentRepository;
 
     @Transactional
-    public void assignTeamToCase(Integer caseId, Integer teamAssignedId) {
+    public void assignTeamToCase(Long caseId, Long teamAssignedId) {
         // Assuming "team_assigned_id" is stored directly in CaseEntity
         // This might be handled in CaseService instead if it's a simple field update
         throw new UnsupportedOperationException("Handled via CaseEntity update");
     }
 
     @Transactional
-    public void addUserToCaseTeam(Integer caseId, Long userId, String role) {
+    public void addUserToCaseTeam(Long caseId, Long userId, String role) {
         Optional<CaseAssignment> existing = assignmentRepository.findByCaseIdAndUserId(caseId, userId);
         if (existing.isPresent() && existing.get().getRemovedAt() == null) {
             throw new RuntimeException("User already assigned to this case");
@@ -39,11 +39,11 @@ public class CaseAssignmentService {
     }
 
     @Transactional
-    public void revokeUserFromCaseTeam(Integer caseId, Long userId) {
+    public void revokeUserFromCaseTeam(Long caseId, Long userId) {
         assignmentRepository.revokeUserFromCaseTeam(caseId, userId);
     }
 
-    public List<CaseAssignment> getAssignmentsForCase(Integer caseId) {
+    public List<CaseAssignment> getAssignmentsForCase(Long caseId) {
         return assignmentRepository.findByCaseId(caseId);
     }
 }

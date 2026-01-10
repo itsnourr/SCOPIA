@@ -15,13 +15,13 @@ public class Clue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "clue_id")
-    private Integer clueId;
+    private Long clueId;
 
     @Column(length = 100)
     private String type;
 
     @Column(name = "picker_id")
-    private Integer pickerId; // References User.userId
+    private Long pickerId; // References User.userId
 
     @Column(name = "clue_desc", length = 500)
     private String clueDesc;

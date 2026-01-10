@@ -17,13 +17,13 @@ public class Link {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "link_id")
-    private Integer linkId;
+    private Long linkId;
 
     @Column(name = "node_id_from", nullable = false)
-    private Integer nodeIdFrom;
+    private Long nodeIdFrom;
 
     @Column(name = "node_id_to", nullable = false)
-    private Integer nodeIdTo;
+    private Long nodeIdTo;
 
     @Column(name = "link_desc", columnDefinition = "TEXT")
     private String linkDesc;
