@@ -6,16 +6,16 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 import LoginScreen from "./components/Screens/LoginScreen.jsx";
-import CaseScreen from "./components/Screens/CaseScreen.jsx";
+import CaseScreen from "./components/Screens/GalleryScreen.jsx";
 import HomeScreen from "./components/Screens/HomeScreen.jsx";
 import UploadScreen from "./components/Screens/UploadScreen.jsx";
 import ArchiveScreen from "./components/Screens/ArchiveScreen.jsx";
 import CluesScreen from "./components/Screens/CluesScreen.jsx";
 import CaseControlScreen from "./components/Screens/CaseControlScreen.jsx";
-import SettingsScreen from "./components/Screens/SettingsScreen.jsx";
-import ProfileScreen from "./components/Screens/ProfileScreen.jsx";
+import SettingsScreen from "./components/Screens/SettingsScreen.jsx"; 
+import ProfileScreen from "./components/Screens/ProfileScreen.jsx"; // might delete later if no use
 import GraphScreen from "./components/Screens/GraphScreen.jsx";
-import CoCustodyScreen from "./components/Screens/CoCustodyScreen.jsx";
+import GalleryScreen from "./components/Screens/CaseScreen.jsx";
 import StudioScreen from "./components/Screens/StudioScreen.jsx";
 
 import UserSelector from "./components/Selectors/UserSelector.jsx"
@@ -32,16 +32,19 @@ function App() {
                     <Route index element={<Navigate to="/login" replace />} />
                     <Route path="/archive" element={<ArchiveScreen />} />
                     <Route path="/cases" element={<HomeScreen />} />
-                    <Route path="/cases/:id" element={<CaseScreen />} />
-                    <Route path="/clues" element={<CluesScreen />} />
-                    <Route path="/control" element={<CaseControlScreen />} />
-                    <Route path="/custody" element={<CoCustodyScreen />} />
-                    <Route path="/graph" element={<GraphScreen />} />
+                    <Route path="/cases/:caseKey" element={<CaseScreen />} /> 
+                    <Route path="/clues/:caseKey" element={<CluesScreen />} />
+                    <Route path="/control/:caseKey" element={<CaseControlScreen />} />
+                    <Route path="/gallery/:id" element={<GalleryScreen />} /> {/* TODO Replace id by caseKey */}
+                    <Route path="/graph/:caseKey" element={<GraphScreen />} />
                     <Route path="/login" element={<LoginScreen />} />
-                    <Route path="/profile" element={<ProfileScreen />} />
-                    <Route path="/selector" element={<UserSelector assignerStatus="admin" value={selectedUserId}  onChange={setSelectedUserId} />} />
+                    <Route path="/settings" element={<SettingsScreen />} />
                     <Route path="/studio/:caseKey" element={<StudioScreen />} />
-                    <Route path="/upload" element={<UploadScreen />} />
+                    <Route path="/upload/:caseKey" element={<UploadScreen />} />
+
+                    {/* To delete later, for testing */}
+                    <Route path="/selector" element={<UserSelector assignerStatus="admin" value={selectedUserId}  onChange={setSelectedUserId} />} />
+                  
                 </Routes>
             </div>
           </Router>
