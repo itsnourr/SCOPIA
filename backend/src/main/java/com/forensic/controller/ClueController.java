@@ -93,7 +93,6 @@ public class ClueController {
             existingClue.setPickerId(updatedClue.getPickerId());
             existingClue.setClueDesc(updatedClue.getClueDesc());
             existingClue.setCoordinates(updatedClue.getCoordinates());
-            existingClue.setAnnotationLink(updatedClue.getAnnotationLink());
 
             Clue savedClue = clueRepository.save(existingClue);
             return ResponseEntity.ok(savedClue);

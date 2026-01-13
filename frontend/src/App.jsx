@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import reactLogo from './assets/react.svg'
@@ -18,7 +18,11 @@ import GraphScreen from "./components/Screens/GraphScreen.jsx";
 import CoCustodyScreen from "./components/Screens/CoCustodyScreen.jsx";
 import StudioScreen from "./components/Screens/StudioScreen.jsx";
 
+import UserSelector from "./components/Selectors/UserSelector.jsx"
+
 function App() {
+
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   return (
     <div className="App">
@@ -35,7 +39,7 @@ function App() {
                     <Route path="/graph" element={<GraphScreen />} />
                     <Route path="/login" element={<LoginScreen />} />
                     <Route path="/profile" element={<ProfileScreen />} />
-                    <Route path="/settings" element={<SettingsScreen />} />
+                    <Route path="/selector" element={<UserSelector assignerStatus="admin" value={selectedUserId}  onChange={setSelectedUserId} />} />
                     <Route path="/studio" element={<StudioScreen />} />
                     <Route path="/upload" element={<UploadScreen />} />
                 </Routes>

@@ -117,5 +117,28 @@ public class UserController {
                     .body(new AuthResponse(null, null, "Error during login: " + e.getMessage()));
         }
     }
+
+    /**
+     * DELETE /api/user/delete/{id}
+     * Deletes a user by ID
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            if (!userRepository.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User not found with id: " + id);
+            }
+
+            userRepository.deleteById(id);
+            return ResponseEntity.ok("User deleted successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    
 }
 

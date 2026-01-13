@@ -20,6 +20,9 @@ public class Clue {
     @Column(length = 100)
     private String type;
 
+    @Column(length = 100)
+    private String category;
+
     @Column(name = "picker_id")
     private Long pickerId; // References User.userId
 
@@ -28,7 +31,4 @@ public class Clue {
 
     @Column(length = 100)
     private String coordinates;
-
-    @Column(name = "annotation_link", length = 500)
-    private String annotationLink;
 }

@@ -25,6 +25,9 @@ public class User {
     
     @Column(unique = true, nullable = false, length = 100)
     private String username;
+
+    @Column(nullable = false, length = 20)
+    private String role;
     
     @Column(nullable = false, length = 500)
     private String password; // SHA-256 hash (Base64 encoded)
