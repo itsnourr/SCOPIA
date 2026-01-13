@@ -40,7 +40,7 @@ function App() {
                     <Route path="/login" element={<LoginScreen />} />
                     <Route path="/profile" element={<ProfileScreen />} />
                     <Route path="/selector" element={<UserSelector assignerStatus="admin" value={selectedUserId}  onChange={setSelectedUserId} />} />
-                    <Route path="/studio" element={<StudioScreen />} />
+                    <Route path="/studio/:caseKey" element={<StudioScreen />} />
                     <Route path="/upload" element={<UploadScreen />} />
                 </Routes>
             </div>

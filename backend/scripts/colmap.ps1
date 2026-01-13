@@ -1,13 +1,47 @@
-# Get the directory where this script is located
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+param (
+    [Parameter(Mandatory = $true)]
+    [string]$caseKey
+)
 
-$sourceFile = Join-Path $scriptDir "smth.txt"
-$targetFile = Join-Path $scriptDir "congrats.txt"
+# -----------------------------
+# Resolve paths
+# -----------------------------
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$casesRoot = Join-Path $scriptDir "..\data\cases"
+$caseRoot  = Join-Path $casesRoot $caseKey
 
-if (Test-Path $sourceFile) {
-    Rename-Item -Path $sourceFile -NewName "congrats.txt" -Force
-    Write-Output "File renamed successfully."
-} else {
-    Write-Error "smth.txt not found."
-    exit 1
+# -----------------------------
+# Define folder structure
+# -----------------------------
+$encryptedImages = Join-Path $caseRoot "encrypted_images"
+
+$pipelineRoot = Join-Path $caseRoot "pipeline"
+$sparseFolder = Join-Path $pipelineRoot "sparse"
+$denseFolder  = Join-Path $pipelineRoot "dense"
+$logsFolder   = Join-Path $pipelineRoot "logs"
+
+$outputFolder = Join-Path $caseRoot "output"
+
+$foldersToCreate = @(
+    $caseRoot
+    $encryptedImages
+    $pipelineRoot
+    $sparseFolder
+    $denseFolder
+    $logsFolder
+    $outputFolder
+)
+
+# -----------------------------
+# Create folders
+# -----------------------------
+foreach ($folder in $foldersToCreate) {
+    if (-not (Test-Path $folder)) {
+        New-Item -ItemType Directory -Path $folder | Out-Null
+        Write-Host "Created: $folder"
+    } else {
+        Write-Host "Exists:  $folder"
+    }
 }
+
+Write-Host "Case folder structure for '$caseKey' created successfully."

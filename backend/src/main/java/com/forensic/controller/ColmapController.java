@@ -2,9 +2,7 @@ package com.forensic.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,17 +13,28 @@ import java.io.InputStreamReader;
 public class ColmapController {
 
     @GetMapping("/run")
-    public ResponseEntity<String> runColmapScript() {
+    public ResponseEntity<String> runColmapScript(
+            @RequestParam("caseKey") String caseKey
+    ) {
         try {
+            if (caseKey == null || caseKey.trim().isEmpty()) {
+                return ResponseEntity
+                        .badRequest()
+                        .body("caseKey parameter is required");
+            }
+
             String baseDir = System.getProperty("user.dir");
 
+            // backend/scripts/colmap.ps1
             File scriptFile = new File(baseDir, "scripts/colmap.ps1");
 
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "powershell.exe",
                     "-ExecutionPolicy", "Bypass",
                     "-File",
-                    scriptFile.getAbsolutePath()
+                    scriptFile.getAbsolutePath(),
+                    "-caseKey",
+                    caseKey
             );
 
             processBuilder.redirectErrorStream(true);
@@ -53,7 +62,7 @@ public class ColmapController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error running pipeline: " + e.getMessage() + " Contact your administrator.");
+                    .body("Error running pipeline: " + e.getMessage());
         }
     }
 }

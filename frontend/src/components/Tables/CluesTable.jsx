@@ -208,19 +208,21 @@ export default function CluesTable() {
   }));
 
   const onTypeChange = (value) => {
-    if (clueSubcategoryToCategoryMap[value]) {
-      setNewClue({
-        ...newClue,
-        type: value,
-        category: clueSubcategoryToCategoryMap[value]
-      });
-    } else {
-      setNewClue({
-        ...newClue,
-        type: "Other",
-        category: value
-      });
-    }
+    setNewClue((prev) => {
+      if (clueSubcategoryToCategoryMap[value]) {
+        return {
+          ...prev,
+          type: value,
+          category: clueSubcategoryToCategoryMap[value]
+        };
+      } else {
+        return {
+          ...prev,
+          type: "Other",
+          category: value
+        };
+      }
+    });
   };
 
   // ---------------- Table Templates ----------------

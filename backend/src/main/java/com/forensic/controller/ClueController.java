@@ -90,6 +90,7 @@ public class ClueController {
 
             // Update allowed fields
             existingClue.setType(updatedClue.getType());
+            existingClue.setCategory(updatedClue.getCategory());
             existingClue.setPickerId(updatedClue.getPickerId());
             existingClue.setClueDesc(updatedClue.getClueDesc());
             existingClue.setCoordinates(updatedClue.getCoordinates());
