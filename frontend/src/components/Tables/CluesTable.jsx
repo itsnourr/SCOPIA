@@ -66,7 +66,7 @@ export default function CluesTable() {
     setDialogVisible(true);
   };
 
-  const saveClue = async () => {
+  const saveClue = async () => { 
     const payload = {
       ...newClue,
       pickerId: selectedUserId
@@ -277,6 +277,8 @@ export default function CluesTable() {
         visible={dialogVisible}
         style={{ width: "450px" }}
         onHide={() => setDialogVisible(false)}
+        closable={false} 
+        dismissableMask={true}
       >
         <div className="p-fluid">
 
@@ -317,7 +319,7 @@ export default function CluesTable() {
           />
         </div>
 
-        <div className="flex justify-content-end mt-3">
+        <div className="flex justify-content-end mt-3" style={{ marginTop:"12px" }}>
           <Button
             label="Save"
             icon="pi pi-check"

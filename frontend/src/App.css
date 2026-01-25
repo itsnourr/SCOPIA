@@ -5,22 +5,16 @@
   padding: 2rem;
   text-align: center;
 
-  --bg-color: #808080;
-  --text-color: #ffffff;
-  --button-bg: #d3d3d3;
-  --button-text: #ffffff;
-
-  background-color: var(--bg-color);
+  
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-color);
+  
   color: var(--text-color);
 }
 
 button {
-  background-color: var(--button-bg);
   color: var(--button-text);
   border: none;
   padding: 10px 16px;
@@ -34,4 +28,9 @@ button {
 
 .pi {
   font-family: "primeicons" !important;
+}
+
+.p-button {
+  background-color: transparent;
+  color: black;
 }

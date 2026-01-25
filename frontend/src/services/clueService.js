@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API = "http://localhost:8443/api/clue";
 
-export const getAllClues = () =>
+export const getAllClues = () => 
   axios.get(`${API}/all`);
 
 export const createClue = (clue) =>

@@ -25,9 +25,6 @@ public class CaseAssignment {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(length = 50) // e.g., 'admin', 'investigator', 'viewer'
-    private String role;
-
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;
 

@@ -18,6 +18,8 @@ import GraphScreen from "./components/Screens/GraphScreen.jsx";
 import GalleryScreen from "./components/Screens/CaseScreen.jsx";
 import StudioScreen from "./components/Screens/StudioScreen.jsx";
 
+import TeamsTable from "./components/Tables/TeamsTable.jsx";
+import CluesTable from "./components/Tables/CluesTable.jsx";
 import UserSelector from "./components/Selectors/UserSelector.jsx"
 
 function App() {
@@ -36,10 +38,11 @@ function App() {
                     <Route path="/clues/:caseKey" element={<CluesScreen />} />
                     <Route path="/control/:caseKey" element={<CaseControlScreen />} />
                     <Route path="/gallery/:id" element={<GalleryScreen />} /> {/* TODO Replace id by caseKey */}
-                    <Route path="/graph/:caseKey" element={<GraphScreen />} />
+                    <Route path="/graph" element={<GraphScreen />} /> {/* TODO add /:caseKey */}
                     <Route path="/login" element={<LoginScreen />} />
                     <Route path="/settings" element={<SettingsScreen />} />
                     <Route path="/studio/:caseKey" element={<StudioScreen />} />
+                    <Route path="/teams" element={<CluesTable />} />
                     <Route path="/upload/:caseKey" element={<UploadScreen />} />
 
                     {/* To delete later, for testing */}

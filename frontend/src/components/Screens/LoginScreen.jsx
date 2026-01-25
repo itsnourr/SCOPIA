@@ -6,6 +6,8 @@ import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Toast } from "primereact/toast";
 
+import { login, signup } from "../../services/UserService";
+
 function LoginScreen() {
 
     const navigateTo = useNavigate();
@@ -17,59 +19,32 @@ function LoginScreen() {
     const [signupError, setSignupError] = useState(null);
     const [signupSuccess, setSignupSuccess] = useState(false);
 
-    function authenticate() {
+    async function authenticate() {
         if (!username || !password) {
             toast.current?.show({
-                severity: 'error',
-                summary: 'Validation Error',
-                detail: 'Please enter both username and password',
-                life: 3000
+            severity: 'error',
+            summary: 'Validation Error',
+            detail: 'Please enter both username and password',
+            life: 3000
             });
             return;
         }
 
-        fetch("/api/user/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    // Show error toast for failed login
-                    toast.current?.show({
-                        severity: 'error',
-                        summary: 'Login Failed',
-                        detail: 'Login failed. Please check your credentials and try again.',
-                        life: 3000
-                    });
-                    return null;
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data) {
-                    // Only navigate if login was successful
-                    console.log("Login successful:", data);
-                    navigateTo("/cases");
-                }
-            })
-            .catch(error => {
-                console.error("Error logging user in", error);
-                toast.current?.show({
-                    severity: 'error',
-                    summary: 'Login Failed',
-                    detail: 'Login failed. Please try again.',
-                    life: 3000
-                });
+        try {
+            const res = await login(username, password);
+            console.log("Login successful:", res.data);
+            navigateTo("/cases");
+        } catch (error) {
+            toast.current?.show({
+            severity: 'error',
+            summary: 'Login Failed',
+            detail: 'Login failed. Please check your credentials.',
+            life: 3000
             });
+        }
     }
 
-    function handleSignup() {
+    async function handleSignup() {
         if (!username || !password) {
             setSignupError("Username and password are required");
             return;
@@ -79,42 +54,22 @@ function LoginScreen() {
         setSignupError(null);
         setSignupSuccess(false);
 
-        fetch("/api/user/signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.message || `Signup failed! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Signup successful:", data);
-                setSignupSuccess(true);
-                setSignupError(null);
-                
-                // Clear success message after 3 seconds
-                setTimeout(() => {
-                    setSignupSuccess(false);
-                }, 3000);
-            })
-            .catch(error => {
-                console.error("Error signing up:", error);
-                setSignupError(error.message || "Failed to create account");
-            })
-            .finally(() => {
-                setSigningUp(false);
-            });
+        try {
+            const res = await signup(username, password);
+            console.log("Signup successful:", res.data);
+
+            setSignupSuccess(true);
+            setTimeout(() => setSignupSuccess(false), 3000);
+        } catch (error) {
+            setSignupError(
+            error.response?.data?.message || "Failed to create account"
+            );
+        } finally {
+            setSigningUp(false);
+        }
     }
+
+
 
     return (
         <div style={{ marginBottom: "260px" }} >

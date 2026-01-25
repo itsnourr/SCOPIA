@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "graphlib": "^2.1.8",
+    "reactflow": "^11.11.4",
+    "zustand": "^5.0.10"
+  }
+}
