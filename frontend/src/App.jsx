@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import scopiaLogo from './assets/scopia-grey-favicon.png'
 
 import LoginScreen from "./components/Screens/LoginScreen.jsx";
 import CaseScreen from "./components/Screens/GalleryScreen.jsx";
@@ -20,7 +21,8 @@ import StudioScreen from "./components/Screens/StudioScreen.jsx";
 
 import TeamsTable from "./components/Tables/TeamsTable.jsx";
 import CluesTable from "./components/Tables/CluesTable.jsx";
-import UserSelector from "./components/Selectors/UserSelector.jsx"
+import UserSelector from "./components/Selectors/UserSelector.jsx";
+import Graph from "./components/Graphs/Graph.jsx";
 
 function App() {
 
@@ -42,7 +44,7 @@ function App() {
                     <Route path="/login" element={<LoginScreen />} />
                     <Route path="/settings" element={<SettingsScreen />} />
                     <Route path="/studio/:caseKey" element={<StudioScreen />} />
-                    <Route path="/teams" element={<CluesTable />} />
+                    <Route path="/teams" element={<CluesScreen />} />
                     <Route path="/upload/:caseKey" element={<UploadScreen />} />
 
                     {/* To delete later, for testing */}
