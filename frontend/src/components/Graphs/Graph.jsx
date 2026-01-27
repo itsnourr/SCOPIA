@@ -169,10 +169,32 @@ export default function Graph() {
       const node = {
         id: String(n.node_id),
         draggable: true,
+
         data: {
-          label: resolveNodeLabel(n),
+          label: (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <i
+                className={`pi ${
+                  isSuspect ? "pi-user" : "pi-search"
+                }`}
+                style={{
+                  fontSize: 18,
+                  color: isSuspect ? "#e74c3c" : "#f1c40f",
+                }}
+              />
+              <div>{resolveNodeLabel(n)}</div>
+            </div>
+          ),
           nodeType: n.node_type,
         },
+
         position: {
           x: 100 + index * 220,
           y: n.node_type === "CLUE" ? 300 : 100,
