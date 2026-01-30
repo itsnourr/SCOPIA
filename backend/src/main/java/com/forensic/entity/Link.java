@@ -19,6 +19,9 @@ public class Link {
     @Column(name = "link_id")
     private Long linkId;
 
+    @Column(name = "case_key", nullable = false, length = 50)
+    private String caseKey;
+
     @Column(name = "node_id_from", nullable = false)
     private Long nodeIdFrom;
 
@@ -37,14 +40,5 @@ public class Link {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-    }
-
-    // Optional: rename field to match DB exactly if needed
-    public Boolean getIsBidirectional() {
-        return bidirectional;
-    }
-
-    public void setIsBidirectional(Boolean bidirectional) {
-        this.bidirectional = bidirectional;
     }
 }

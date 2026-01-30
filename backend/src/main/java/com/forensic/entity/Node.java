@@ -17,9 +17,19 @@ public class Node {
     @Column(name = "node_id")
     private Long nodeId;
 
+    @Column(name = "case_key", nullable = false, length = 50)
+    private String caseKey;
+
     @Column(name = "node_type", nullable = false, length = 10)
-    private String nodeType; // e.g., "SUSPECT"
+    private String nodeType; // "SUSPECT", "CLUE"
 
     @Column(name = "node_reference", nullable = false)
-    private Long nodeReference; // e.g., suspect_id
+    private Long nodeReference;
+
+    // React Flow position persistence
+    @Column(name = "pos_x", nullable = false)
+    private Double posX;
+
+    @Column(name = "pos_y", nullable = false)
+    private Double posY;
 }
