@@ -10,5 +10,6 @@ import java.util.List;
 public interface CaseRepository extends JpaRepository<Case, Long> {
     List<Case> findByStatus(String status);
     Page<Case> findByStatus(String status, Pageable pageable);
+    List<Case> findByStatusIgnoreCase(String status);
 }
 

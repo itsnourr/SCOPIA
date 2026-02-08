@@ -6,12 +6,15 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import './HomeScreen.css';
 
+import { getAllCases, createCase } from "../../services/CaseService";
+
 export default function HomeScreen() {
   const navigate = useNavigate();
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [caseKey, setCaseKey] = useState('');
   const [caseName, setCaseName] = useState('');
   const [caseDescription, setCaseDescription] = useState('');
   const [creating, setCreating] = useState(false);
@@ -23,91 +26,76 @@ export default function HomeScreen() {
   }, []);
 
   const fetchCases = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/case/all', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  try {
+    setLoading(true);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    const data = await getAllCases();
+    console.log("API Response:", data);
 
-      const data = await response.json();
-      console.log('API Response:', data);
+    const casesWithTitles = data.map((caseItem, index) => {
+      const caseId =
+        caseItem.caseid ||
+        caseItem.caseId ||
+        caseItem.id ||
+        caseItem.ID;
 
-      const casesWithTitles = data.map((caseItem, index) => {
-        console.log('Case item:', caseItem);
-        const caseId = caseItem.caseid || caseItem.caseId || caseItem.id || caseItem.ID;
-        return {
-          ...caseItem,
-          title: caseItem.caseName || caseItem.title || `Case ${caseId || index + 1}`
-        };
-      });
+      return {
+        ...caseItem,
+        title:
+          caseItem.caseName ||
+          caseItem.title ||
+          `Case ${caseId || index + 1}`,
+      };
+    });
 
-      setCases(casesWithTitles);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching cases:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setCases(casesWithTitles);
+    setError(null);
+  } catch (err) {
+    console.error("Error fetching cases:", err);
+    setError(err.message || "Failed to load cases");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleCreateCase = async () => {
-    if (!caseName.trim()) {
-      setCreateError('Case name is required');
-      return;
-    }
+  if (!caseName.trim()) {
+    setCreateError("Case name is required");
+    return;
+  }
 
-    try {
-      setCreating(true);
-      setCreateError(null);
-      setCreateSuccess(false);
+  try {
+    setCreating(true);
+    setCreateError(null);
+    setCreateSuccess(false);
 
-      const response = await fetch('/api/case/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          caseName: caseName,
-          description: caseDescription || '',
-        }),
-      });
+    const result = await createCase({
+      caseName,
+      description: caseDescription || "",
+    });
 
-      if (!response.ok) {
-        throw new Error(`Failed to create case! status: ${response.status}`);
-      }
+    console.log("Case created successfully:", result);
 
-      const result = await response.json();
-      console.log('Case created successfully:', result);
+    setCreateSuccess(true);
 
-      setCreateSuccess(true);
+    // Reset form
+    setCaseName("");
+    setCaseDescription("");
+    setShowCreateDialog(false);
 
-      // Reset form
-      setCaseName('');
-      setCaseDescription('');
-      setShowCreateDialog(false);
+    // Refresh list
+    await fetchCases();
 
-      // Refresh cases list
-      await fetchCases();
+    setTimeout(() => setCreateSuccess(false), 3000);
+  } catch (err) {
+    console.error("Error creating case:", err);
+    setCreateError(err.message || "Failed to create case");
+  } finally {
+    setCreating(false);
+  }
+};
 
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setCreateSuccess(false);
-      }, 3000);
-    } catch (err) {
-      console.error('Error creating case:', err);
-      setCreateError(err.message);
-    } finally {
-      setCreating(false);
-    }
-  };
 
   const handleOpenCreateDialog = () => {
     setCaseName('');
@@ -162,6 +150,19 @@ export default function HomeScreen() {
           </div>
         }
       >
+        <div className="mb-3">
+          <label htmlFor="caseKey" className="block mb-2">
+            Case Key *
+          </label>
+          <InputText
+            id="caseKey"
+            value={caseId}
+            onChange={(e) => setCaseKey(e.target.value)}
+            placeholder="e.g. GHI-003"
+            className="w-full"
+          />
+        </div>
+
         <div className="p-fluid">
           <div className="mb-3">
             <label htmlFor="caseName" className="block mb-2">Case Name *</label>

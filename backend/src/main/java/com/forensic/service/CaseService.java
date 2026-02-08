@@ -17,16 +17,16 @@ public class CaseService {
 
     private final CaseRepository caseRepository;
 
-    public List<Case> listActiveCasesWithDesc() {
-        return caseRepository.findByStatus("open");
-    }
-
-    public Page<Case> listActiveCasesWithPagination(Pageable pageable) {
-        return caseRepository.findByStatus("open", pageable);
+    public List<Case> listOpenCases() {
+        return caseRepository.findByStatus("open"); 
     }
 
     public List<Case> listArchivedCases() {
         return caseRepository.findByStatus("archived");
+    }
+
+    public Page<Case> listActiveCasesWithPagination(Pageable pageable) {
+        return caseRepository.findByStatus("open", pageable);
     }
 
     @Transactional

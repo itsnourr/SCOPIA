@@ -1,6 +1,7 @@
 package com.forensic.controller;
 
 import com.forensic.entity.Case;
+import com.forensic.service.CaseService;
 import com.forensic.repository.CaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,10 @@ public class CaseController {
     @Autowired
     private CaseRepository caseRepository;
 
-    /**
-     * GET /api/case/all
-     * Returns all forensic cases
-     */
+    
+    @Autowired
+    private CaseService caseService;
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllCases() {
         try {
@@ -31,10 +32,28 @@ public class CaseController {
         }
     }
 
-    /**
-     * POST /api/case/create
-     * Creates a new forensic case
-     */
+    @GetMapping("/all/open")
+    public ResponseEntity<?> getAllOpenCases() {
+        try {
+            List<Case> cases = caseService.listOpenCases();
+            return ResponseEntity.ok(cases);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving cases: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/all/archived")
+    public ResponseEntity<?> getAllArchivedCases() {
+        try {
+            List<Case> cases = caseService.listArchivedCases();
+            return ResponseEntity.ok(cases);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving cases: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createCase(@RequestBody Case caseEntity) {
         try {
