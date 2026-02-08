@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 export default function CaseScreen() {
 
   return (
-    <div>Case Description & PDF Export option</div>
+      <div style={{ width: "100%", height: "100%"}}>
+        <h1 className="screen-title">Case Details</h1> 
+      </div>
   );
 }

@@ -11,5 +11,24 @@ export const getCriminologists = () =>
   axios.get(`${API}/criminologists`);
 
 /* Superadmin: All users */
-export const getAllUsers = () =>
-  axios.get(`${API}/all`);
+// export const getAllUsers = () =>
+//   axios.get(`${API}/all`);
+
+export const getAllUsers = () => {
+  return { data:[
+  {
+    userId: 1,
+    username: "Nour Rajeh",
+    role: "criminologist"
+  },
+  {
+    userId: 2,
+    username: "Sami Trad",
+    role: "criminologist"
+  },
+  {
+    userId: 3,
+    username: "Cézar Khatib",
+    role: "superadmin"
+  }
+  ]}};

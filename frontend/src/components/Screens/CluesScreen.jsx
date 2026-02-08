@@ -8,6 +8,7 @@ export default function CluesScreen() {
 
   return (
     <div>
+      <h1 className="screen-title">Clues</h1>
       <CluesTable />
     </div>
   );

@@ -255,6 +255,8 @@ export default function Graph() {
     setIsEditingEdgeLabel(true);
   }, []);
 
+  const saveGraph = () => {};
+
   /**
    * ==============================
    * Render
@@ -350,6 +352,13 @@ export default function Graph() {
               Add clue
             </button>
 
+            <button
+              style={{ width: "100%", fontSize: 13, backgroundColor: "#555353", marginTop: "10px"  }}
+              onClick={saveGraph}
+            >
+              Save
+            </button>
+
           </div>
         </Panel>
       </ReactFlow>
@@ -361,7 +370,7 @@ export default function Graph() {
             position: "absolute",
             bottom: 20,
             left: 20,
-            background: "#2b2b2b",
+            background: "red",
             padding: 12,
             borderRadius: 8,
             color: "#fff",

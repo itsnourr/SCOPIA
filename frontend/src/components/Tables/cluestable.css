@@ -1,0 +1,227 @@
+/* ===== Clue Table Wrapper ===== */
+.clue-table-container {
+  background: #1f1f1f;
+  border-radius: 10px;
+  padding: 0.75rem;
+  padding-bottom: 0;
+  border: 1px solid #2b2b2b;
+}
+
+/* ===== PrimeReact DataTable ===== */
+.clue-table-container .p-datatable {
+  background: transparent;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+/* Fixed width + wrap for Description column */
+.clue-desc-column {
+  width: 320px;
+  max-width: 320px;
+}
+
+.clue-desc-column,
+.clue-desc-column * {
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+
+/* Header */
+.clue-table-container .p-datatable-thead > tr > th {
+  background: #2a2a2a;
+  color: #ffffff;
+  font-weight: 600;
+  border-bottom: 1px solid #3a3a3a;
+  padding: 0.75rem;
+}
+
+/* Body rows */
+.clue-table-container .p-datatable-tbody > tr {
+  background: #1f1f1f;
+  transition: background 0.15s;
+  color: white;
+}
+
+.clue-table-container .p-datatable-tbody > tr:hover {
+  background: #2a2a2a;
+}
+
+/* Cells */
+.clue-table-container .p-datatable-tbody > tr > td {
+  border-bottom: 1px solid #2f2f2f;
+  padding: 0.65rem 0.75rem;
+  white-space: nowrap;
+}
+
+/* Empty / loading */
+.clue-table-container .p-datatable-loading-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ===== Action Buttons (edit / delete) ===== */
+.clue-table-container .p-button-text {
+  color: #cfcfcf;
+}
+
+.clue-table-container .p-button-text:hover {
+  background: #3a3a3a;
+  color: #ffffff;
+}
+
+.clue-table-container .p-button-danger {
+  color: #ff6b6b;
+}
+
+/* ===== Add Clue Button ===== */
+.clue-add-btn {
+  margin-bottom: 0.75rem;
+  background: #ffffff;
+  color: #1f1f1f;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.clue-add-btn:hover {
+  background: #e6e6e6;
+}
+
+/* ===== Paginator ===== */
+.clue-table-container .p-paginator {
+  background: transparent;
+  border-top: 1px solid #2f2f2f;
+}
+
+.clue-table-container .p-paginator .p-paginator-page {
+  color: #cfcfcf;
+}
+
+.clue-table-container .p-paginator .p-highlight {
+  background: #ffffff;
+  color: #1f1f1f;
+  border-radius: 6px;
+}
+
+/* ===== Dialog ===== */
+.p-dialog {
+  background: #1f1f1f;
+  border-radius: 12px;
+  border: 1px solid #2b2b2b;
+  color: white;
+}
+
+.p-dialog .p-dialog-header {
+  background: #1f1f1f;
+  color: #ffffff;
+  /* height: 32px; */
+}
+
+.p-dialog .p-dialog-content {
+  color: #fff;
+  background-color: #1f1f1f;
+  padding-top: 0px 20px;
+}
+
+.p-inputtext{
+  background: #1f1f1f;
+  /* border: 1px solid #3a3a3a; */
+  border-radius: 10px;
+  color: #ffffff;
+}
+
+.p-dropdown {
+  background: #1f1f1f;
+  /* border: 1px solid #3a3a3a; */
+  border-radius: 10px;
+  color: #ffffff;
+}
+
+.p-inputtext::placeholder {
+  color: #9a9a9a;
+}
+
+.p-dropdown-panel {
+  background: #1f1f1f;
+  color: white;
+  border: 1px solid #3a3a3a;
+}
+
+.p-dropdown-items-wrapper {
+  background-color: #1f1f1f;
+}
+
+.p-dropdown-item {
+  color: #ffffff;
+}
+
+.p-dropdown-item.p-focus:not(.p-highlight) {
+  background: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+/* ===== Dialog form spacing ===== */
+.clue-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem; /* space between form rows */
+}
+
+/* Label spacing + style */
+.clue-form label {
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
+  font-weight: 500;
+  color: #dcdcdc;
+}
+
+/* Inputs spacing */
+.clue-form .p-inputtext,
+.clue-form .p-dropdown,
+.clue-form .p-multiselect {
+  margin-bottom: 0.25rem;
+}
+
+/* Extra breathing room after complex inputs (UserSelector etc.) */
+.clue-form > *:has(.p-dropdown),
+.clue-form > *:has(.p-inputtext) {
+  margin-bottom: 0.4rem;
+}
+
+/* ===== Compact paginator ===== */
+.clue-table-container .p-paginator {
+  font-size: 0.75rem;          /* smaller text */
+  padding: 0.25rem 0.5rem;     /* less vertical space */
+  border: 0px;
+}
+
+/* Page buttons */
+.clue-table-container .p-paginator .p-paginator-page,
+.clue-table-container .p-paginator .p-paginator-first,
+.clue-table-container .p-paginator .p-paginator-prev,
+.clue-table-container .p-paginator .p-paginator-next,
+.clue-table-container .p-paginator .p-paginator-last {
+  min-width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1rem;
+  padding: 0;
+}
+
+/* Icons inside paginator buttons */
+.clue-table-container .p-paginator .pi {
+  font-size: 0.7rem;
+}
+
+/* Active page */
+.clue-table-container .p-paginator .p-highlight {
+  border-radius: 6px;
+}
+
+
+/* Save button */
+.p-white-button {
+  background: white;
+  color: #1f1f1f;
+  font-weight: 600;
+  border-radius: 8px;
+}

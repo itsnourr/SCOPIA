@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import './HomeScreen.css';
 
-import { getAllCases, createCase } from "../../services/CaseService";
+import { getMyOpenCases, createCase } from "../../services/CaseService";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export default function HomeScreen() {
   try {
     setLoading(true);
 
-    const data = await getAllCases();
+    const data = await getMyOpenCases();
     console.log("API Response:", data);
 
     const casesWithTitles = data.map((caseItem, index) => {
@@ -107,7 +107,7 @@ export default function HomeScreen() {
 
   return (
     <div className="p-4">
-      <h1 className="text-3xl mb-4 font-semibold">Cases</h1>
+      <h1 className="screen-title">Cases</h1>
 
       {/* Create New Case Button */}
       <div className="mb-4">
@@ -156,7 +156,7 @@ export default function HomeScreen() {
           </label>
           <InputText
             id="caseKey"
-            value={caseId}
+            value={caseKey}
             onChange={(e) => setCaseKey(e.target.value)}
             placeholder="e.g. GHI-003"
             className="w-full"
@@ -210,7 +210,7 @@ export default function HomeScreen() {
                   className="case-item"
                   onClick={() => {
                     if (caseId) {
-                      navigate(`/cases/${caseId}`);
+                      navigate(`/case/${caseId}`);
                     } else {
                       console.error('No case ID found for case:', caseItem);
                     }

@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
+import "./CluesTable.css";
 
 import UserSelector from "../Selectors/UserSelector"; // adjust path if needed
 
@@ -46,6 +47,7 @@ export default function CluesTable() {
   const loadClues = async () => {
     setLoading(true);
     const res = await getAllClues();
+    console.log(res.data);
     setClues(res.data);
     setLoading(false);
   };
@@ -247,29 +249,34 @@ export default function CluesTable() {
 
   return (
     <>
+      
+
+      <div className="clue-table-container">
+        <DataTable
+          value={clues}
+          paginator
+          rows={5}
+          loading={loading}
+          dataKey="clueId"
+        >
+          <Column field="clueId" header="ID" style={{ width: "40px" }} />
+          <Column field="type" header="Type" />
+          <Column field="category" header="Category" />
+          <Column field="pickerId" header="Picker" />
+          <Column field="clueDesc" header="Description" className="clue-desc-column" />
+          <Column field="coordinates" header="Coordinates" />
+          <Column body={editTemplate} style={{ width: "4rem" }} />
+          <Column body={deleteTemplate} style={{ width: "4rem" }} />
+        </DataTable>
+      </div>
+
       <Button
         label="Add Clue"
         icon="pi pi-plus"
-        className="mb-3"
+        className="mb-3 p-white-button"
+        style={{ marginTop: "12px" }}
         onClick={openCreateDialog}
       />
-
-      <DataTable
-        value={clues}
-        paginator
-        rows={10}
-        loading={loading}
-        dataKey="clueId"
-      >
-        <Column field="clueId" header="ID" style={{ width: "80px" }} />
-        <Column field="type" header="Type" />
-        <Column field="category" header="Category" />
-        <Column field="pickerId" header="Picker" />
-        <Column field="clueDesc" header="Description" />
-        <Column field="coordinates" header="Coordinates" />
-        <Column body={editTemplate} style={{ width: "4rem" }} />
-        <Column body={deleteTemplate} style={{ width: "4rem" }} />
-      </DataTable>
 
       {/* Create / Edit Dialog */}
       <Dialog
@@ -279,8 +286,9 @@ export default function CluesTable() {
         onHide={() => setDialogVisible(false)}
         closable={false} 
         dismissableMask={true}
+        classname="clue-dialog"
       >
-        <div className="p-fluid">
+        <div className="p-fluid clue-form">
 
           <label>Type / Category</label>
           <Dropdown
@@ -292,10 +300,10 @@ export default function CluesTable() {
             options={dropdownOptions}
             onChange={(e) => onTypeChange(e.value)}
             placeholder="Select or search"
-            filter
           />
 
           <label>Picker</label>
+          
           <UserSelector
             assignerStatus="admin"
             value={selectedUserId}

@@ -77,7 +77,7 @@ export default function UserSelector({
       loading={loading}
       disabled={disabled || !assignerStatus}
       showClear
-      filter
+      // filter
       className="w-full"
     />
   );

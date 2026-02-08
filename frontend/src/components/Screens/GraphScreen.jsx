@@ -5,7 +5,9 @@ import Graph from "../Graphs/Graph";
 export default function GraphScreen() {
 
   return (
-    <div style={{ width: "100%", height: "100%"}}>
+    <div>
+            <h1 className="screen-title" style={{ paddingBottom: "0px", marginBottom: "0px" }}>Graph</h1>
+      
     <ReactFlowProvider>
         <Graph />
       </ReactFlowProvider>
