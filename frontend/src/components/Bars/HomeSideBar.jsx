@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import classNames from "classnames";
+import { logout } from "../../services/UserService";
 import "./sidebar.css";
 
 export default function HomeSidebar() {
@@ -80,11 +81,7 @@ export default function HomeSidebar() {
     {
       label: "Logout",
       icon: "pi pi-sign-out",
-      command: () => {
-        // example: clear auth + redirect
-        localStorage.clear();
-        navigate("/login");
-      },
+      command: logout(),
       template: itemTemplate,
     },
   ];

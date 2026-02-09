@@ -54,6 +54,28 @@ public class CaseController {
         }
     }
 
+    @GetMapping("/all/open/{username}")
+    public ResponseEntity<?> getOpenCasesByUsername(@PathVariable String username) {
+        try {
+            List<Case> cases = caseService.listOpenCasesByUsername(username);
+            return ResponseEntity.ok(cases);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving cases: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/all/archived/{username}")
+    public ResponseEntity<?> getArchivedCasesByUsername(@PathVariable String username) {
+        try {
+            List<Case> cases = caseService.listArchivedCasesByUsername(username);
+            return ResponseEntity.ok(cases);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving cases: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createCase(@RequestBody Case caseEntity) {
         try {

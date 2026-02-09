@@ -106,24 +106,8 @@ export default function HomeScreen() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="screen-title">Cases</h1>
-
-      {/* Create New Case Button */}
-      <div className="mb-4">
-        <button
-          onClick={handleOpenCreateDialog}
-          className="p-button p-component p-button-primary"
-        >
-          Create New Case
-        </button>
-        {createSuccess && (
-          <p className="text-green-500 mt-2">Case created successfully!</p>
-        )}
-        {createError && (
-          <p className="text-red-500 mt-2">Error: {createError}</p>
-        )}
-      </div>
+    <div style={{height: "100%", width: "100%"}}>
+      <h1 className="screen-title">My Open Cases</h1>
 
       {/* Create Case Dialog */}
       <Dialog
@@ -208,25 +192,36 @@ export default function HomeScreen() {
                 <div
                   key={caseId}
                   className="case-item"
-                  onClick={() => {
-                    if (caseId) {
-                      navigate(`/case/${caseId}`);
-                    } else {
-                      console.error('No case ID found for case:', caseItem);
-                    }
-                  }}
+                  onClick={() => caseId && navigate(`/case/${caseId}`)}
                 >
                   <Card
-                    title={caseItem.title}
-                    subTitle={caseItem.description}
-                    className="cursor-pointer shadow-2 border-round-xl"
+                    title={caseItem.caseKey}
+                    subTitle={caseItem.title}
+                    className="case-card"
                   />
                 </div>
+
               );
             })
           )}
         </div>
       )}
+
+      {/* Create New Case Button */}
+      <div className="mb-4">
+        <button
+          onClick={handleOpenCreateDialog}
+          className="p-white-button"
+        >
+          Create New Case
+        </button>
+        {createSuccess && (
+          <p className="text-green-500 mt-2">Case created successfully!</p>
+        )}
+        {createError && (
+          <p className="text-red-500 mt-2">Error: {createError}</p>
+        )}
+      </div>
     </div>
   );
 }

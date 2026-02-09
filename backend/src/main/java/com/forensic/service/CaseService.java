@@ -25,6 +25,14 @@ public class CaseService {
         return caseRepository.findByStatus("archived");
     }
 
+    public List<Case> listOpenCasesByUsername(String username) {
+        return caseRepository.findByStatusAndAssignedTo("open", username);
+    }
+
+    public List<Case> listArchivedCasesByUsername(String username) {
+        return caseRepository.findByStatusAndAssignedTo("archived", username);
+    }
+
     public Page<Case> listActiveCasesWithPagination(Pageable pageable) {
         return caseRepository.findByStatus("open", pageable);
     }

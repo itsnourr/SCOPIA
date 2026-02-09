@@ -33,7 +33,8 @@ function LoginScreen() {
         try {
             const res = await login(username, password);
             console.log("Login successful:", res.data);
-            navigateTo("/cases");
+            localStorage.setItem("currentUsername", username);
+            navigateTo("/cases"); 
         } catch (error) {
             toast.current?.show({
             severity: 'error',
