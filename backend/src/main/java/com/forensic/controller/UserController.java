@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,6 +28,40 @@ public class UserController {
     
     @Autowired
     private PasswordService passwordService;
+
+    @GetMapping("/id/{id}/username")
+    public ResponseEntity<?> getUsernameById(@PathVariable Long id) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User not found with id: " + id);
+            }
+            String username = userOptional.get().getUsername();
+            return ResponseEntity.ok(username);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving username: " + e.getMessage());
+        }
+    }    
+    // same as above but by bulk
+    @GetMapping("/usernames")
+    public ResponseEntity<?> getUsernamesByIds(@RequestParam List<Long> ids) {
+        try {
+            List<User> users = userRepository.findAllById(ids);
+
+            Map<Long, String> result = new HashMap<>();
+            for (User user : users) {
+                result.put(user.getUserId(), user.getUsername());
+            }
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving usernames: " + e.getMessage());
+        }
+    }
     
     /**
      * POST /api/user/signup

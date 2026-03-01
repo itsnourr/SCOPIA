@@ -1,7 +1,9 @@
 package com.forensic.service;
 
 import com.forensic.entity.Case;
+import com.forensic.repository.CaseAssignmentRepository;
 import com.forensic.repository.CaseRepository;
+import com.forensic.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,8 @@ import java.util.List;
 public class CaseService {
 
     private final CaseRepository caseRepository;
+    private final CaseAssignmentRepository caseAssignmentRepository;
+    private final UserRepository userRepository;    
 
     public List<Case> listOpenCases() {
         return caseRepository.findByStatus("open"); 
@@ -26,11 +30,17 @@ public class CaseService {
     }
 
     public List<Case> listOpenCasesByUsername(String username) {
-        return caseRepository.findByStatusAndAssignedTo("open", username);
+        Long userId = userRepository.findIdByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"))
+            .getUserId();
+        return caseAssignmentRepository.findByStatusAndAssignedTo("open", userId);
     }
 
     public List<Case> listArchivedCasesByUsername(String username) {
-        return caseRepository.findByStatusAndAssignedTo("archived", username);
+        Long userId = userRepository.findIdByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"))
+            .getUserId();
+        return caseAssignmentRepository.findByStatusAndAssignedTo("archived", userId);
     }
 
     public Page<Case> listActiveCasesWithPagination(Pageable pageable) {

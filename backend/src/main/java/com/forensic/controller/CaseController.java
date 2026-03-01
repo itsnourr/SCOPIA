@@ -16,7 +16,6 @@ public class CaseController {
 
     @Autowired
     private CaseRepository caseRepository;
-
     
     @Autowired
     private CaseService caseService;

@@ -6,6 +6,7 @@ import { Dialog } from "primereact/dialog";
 import { Tag } from "primereact/tag";
 
 import UserSelector from "../Selectors/UserSelector";
+import "./CluesTable.css";
 
 import {
   getAllTeams,
@@ -19,6 +20,7 @@ import {
 } from "../../services/CaseService";
 
 import "../../App.css"
+import { mapUserIdToUsernameByBulk } from "../../services/userService";
 
 export default function TeamsTable() {
 
@@ -30,6 +32,7 @@ export default function TeamsTable() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
+  const [usernames, setUsernames] = useState({});
 
   const [selectedUserId, setSelectedUserId] = useState(null);
 
@@ -69,11 +72,13 @@ export default function TeamsTable() {
   // ---------------- Team Dialog ----------------
 
   const openTeamDialog = async (rowData) => {
+    
     setSelectedCaseId(rowData.caseId);
 
     const res = await getTeamByCaseId(rowData.caseId);
     setTeamMembers(res.data.userIds);
-
+    const usernamesRes = await mapUserIdToUsernameByBulk(res.data.userIds);
+    setUsernames(usernamesRes);
     setSelectedUserId(null);
     setDialogVisible(true);
   };
@@ -125,7 +130,7 @@ export default function TeamsTable() {
   const memberTagTemplate = (userId) => (
     <Tag
       key={userId}
-      value={`User ${userId}`}
+      value={usernames[userId] || "Loading..."}
       className="mr-2 mb-2"
       icon="pi pi-user"
       onClick={() => removeMember(userId)}
@@ -137,6 +142,7 @@ export default function TeamsTable() {
 
   return (
     <>
+    <div className="clue-table-container">
       <DataTable
         value={teams}
         paginator
@@ -156,7 +162,7 @@ export default function TeamsTable() {
           style={{ width: "120px" }}
         />
       </DataTable>
-
+    </div>
       {/* Team Management Dialog */}
       <Dialog
         header={`Manage Team – Case ${selectedCaseId}`}

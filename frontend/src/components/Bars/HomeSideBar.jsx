@@ -11,6 +11,11 @@ export default function HomeSidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
+  const logoutAndRedirect = () => {
+    logout();
+    navigate("/login");
+  };
+
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
@@ -65,6 +70,13 @@ export default function HomeSidebar() {
     },
     { separator: true },
     {
+      label: "Teams",
+      icon: "pi pi-users",
+      path: "teams",
+      command: () => navigate("teams"),
+      template: itemTemplate,
+    },
+    {
       label: "Settings",
       icon: "pi pi-cog",
       path: "settings",
@@ -72,16 +84,9 @@ export default function HomeSidebar() {
       template: itemTemplate,
     },
     {
-      label: "Profile",
-      icon: "pi pi-user",
-      path: "profile",
-      command: () => navigate("profile"),
-      template: itemTemplate,
-    },
-    {
       label: "Logout",
       icon: "pi pi-sign-out",
-      command: logout(),
+      command: () => logoutAndRedirect(),
       template: itemTemplate,
     },
   ];

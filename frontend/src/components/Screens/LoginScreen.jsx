@@ -34,7 +34,7 @@ function LoginScreen() {
             const res = await login(username, password);
             console.log("Login successful:", res.data);
             localStorage.setItem("currentUsername", username);
-            navigateTo("/cases"); 
+            navigateTo("/home/cases"); 
         } catch (error) {
             toast.current?.show({
             severity: 'error',
@@ -77,9 +77,9 @@ function LoginScreen() {
             <Toast ref={toast} />
 
             <h1 style={{ fontSize: "140px", marginTop: "48px", marginBottom: "0", marginLeft: "50px" }}>🔐</h1>
-            <h1>Login using your credentials</h1>
+            <h1 style={{color: "white"}} >Login using your credentials</h1>
 
-            <div style={{ textAlign: "right", marginRight: "100px" }} >
+            <div style={{ textAlign: "right", marginRight: "100px", color: "white" }} >
 
                 <div style={{ marginBottom: "20px" }}>
                     <label style={{ marginRight: "10px", fontSize: "24px" }}> Enter your name: </label>

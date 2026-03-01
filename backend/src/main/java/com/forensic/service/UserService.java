@@ -20,7 +20,6 @@ public class UserService {
      */
     public List<User> getUsersForCase(Long caseId) {
         /*
-         * TODO:
          * Replace this with actual case-user mapping logic
          * Example later:
          * return caseUserRepository.findUsersByCaseId(caseId);

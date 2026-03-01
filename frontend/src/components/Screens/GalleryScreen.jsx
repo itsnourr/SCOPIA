@@ -9,9 +9,9 @@ import './GalleryScreen.css';
 
 export default function GalleryScreen() {
 
-  const { id } = useParams(); // TODO: refactor id to key
+  const { caseKey } = useParams(); // TODO: refactor caseKey to key
   const [images, setImages] = useState([]);
-  const [imageMetadata, setImageMetadata] = useState([]); // Store image metadata with filepath
+  const [imageMetadata, setImageMetadata] = useState([]); // (kept for legacy API approach)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -20,9 +20,14 @@ export default function GalleryScreen() {
   const fileInputRef = useRef(null);
   const toast = useRef(null);
 
+  /*
+  ==============================
+  OLD BACKEND API APPROACH (COMMENTED OUT)
+  ==============================
+
   const fetchImages = async () => {
-    if (!id) {
-      setError('No case ID provided');
+    if (!caseKey) {
+      setError('No case caseKey provided');
       setLoading(false);
       return;
     }
@@ -31,11 +36,9 @@ export default function GalleryScreen() {
       setLoading(true);
       setError(null);
 
-      const listResponse = await fetch(`/api/image/list/${id}`, {
+      const listResponse = await fetch(`/api/image/list/${caseKey}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!listResponse.ok) {
@@ -43,35 +46,69 @@ export default function GalleryScreen() {
       }
 
       const imageListData = await listResponse.json();
-      console.log('Image list API response:', imageListData);
 
       const imageItems = Array.isArray(imageListData)
         ? imageListData.filter(item => item.viewUrl != null)
         : [];
 
-      // Store metadata for error handling
       setImageMetadata(imageItems);
 
-      const imageUrls = imageItems.map(item => {
-        // Convert full URL to proxy path to avoid SSL/CORS issues
-        // viewUrl: "https://localhost:8443/api/image/view/3" -> "/api/image/view/3"
-        return item.viewUrl.replace(/^https?:\/\/[^/]+/, '');
-      });
+      const imageUrls = imageItems.map(item =>
+        item.viewUrl.replace(/^https?:\/\/[^/]+/, '')
+      );
 
-      console.log('Image URLs to display:', imageUrls);
       setImages(imageUrls);
     } catch (err) {
-      console.error('Error fetching images:', err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+  */
+
+  /*
+  ==============================
+  NEW PUBLIC FOLDER APPROACH
+  Predictable naming: 1.jpg, 2.jpg, 3.jpg...
+  Folder: /public/cases/{caseKey}/images/
+  ==============================
+  */
 
   useEffect(() => {
-    fetchImages();
-  }, [id]);
+    const loadImages = async () => {
+      if (!caseKey) {
+        setError("No case key provided");
+        setLoading(false);
+        return;
+      }
 
+      setLoading(true);
+      setError(null);
+
+      const MAX_IMAGES = 100; // Safe upper bound
+      const validImages = [];
+
+      for (let i = 1; i <= MAX_IMAGES; i++) {
+        const url = `/cases/${caseKey}/images/${i}.JPG`;
+
+        try {
+          const res = await fetch(url, { method: "HEAD" });
+          if (res.ok) {
+            validImages.push(url);
+          } else {
+            break; // Stop when numbering ends
+          }
+        } catch {
+          break;
+        }
+      }
+
+      setImages(validImages);
+      setLoading(false);
+    };
+
+    loadImages();
+  }, [caseKey]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -79,27 +116,17 @@ export default function GalleryScreen() {
 
   const handleFileSelect = async (event) => {
     const file = event.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    if (!id) {
-      setUploadError('No case ID available');
-      return;
-    }
+    if (!file || !caseKey) return;
 
     try {
       setUploading(true);
       setUploadError(null);
       setUploadSuccess(false);
 
-      // Create FormData to send file and caseId
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('caseId', id);
+      formData.append('caseId', caseKey);
 
-      // Upload file to API
       const response = await fetch('/api/image/upload', {
         method: 'POST',
         body: formData,
@@ -109,23 +136,18 @@ export default function GalleryScreen() {
         throw new Error(`Upload failed! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log('Upload successful:', result);
-
       setUploadSuccess(true);
 
-      // Refresh images list after successful upload
-      await fetchImages();
+      // Optional: reload predictable list
+      window.location.reload();
 
-      // Reset file input
       event.target.value = '';
 
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setUploadSuccess(false);
       }, 3000);
+
     } catch (err) {
-      console.error('Error uploading file:', err);
       setUploadError(err.message);
       event.target.value = '';
     } finally {
@@ -133,79 +155,65 @@ export default function GalleryScreen() {
     }
   };
 
-  const handleImageError = async (event, imageUrl) => {
-    // Try to fetch the image to check the status code
-    try {
-      const response = await fetch(imageUrl, { method: 'HEAD' });
+  const itemTemplate = (item) => (
+    <img
+      src={item}
+      alt="Case"
+      style={{ width: '100%', height: '500px', objectFit: 'cover' }}
+    />
+  );
 
-      if (response.status === 403) {
-        // Find the image metadata by matching the URL
-        const imageItem = imageMetadata.find(item => {
-          const proxyPath = item.viewUrl.replace(/^https?:\/\/[^/]+/, '');
-          return proxyPath === imageUrl;
-        });
-
-        const filepath = imageItem?.filepath || 'unknown';
-
-        toast.current?.show({
-          severity: 'error',
-          summary: 'Image Tampering Detected',
-          detail: `Image with path "${filepath}" has been tampered with, contact your administrator`,
-          life: 5000
-        });
-      }
-    } catch (err) {
-      // If we can't check the status, still try to show the error if it's likely a 403
-      const imageItem = imageMetadata.find(item => {
-        const proxyPath = item.viewUrl.replace(/^https?:\/\/[^/]+/, '');
-        return proxyPath === imageUrl;
-      });
-
-      if (imageItem) {
-        toast.current?.show({
-          severity: 'error',
-          summary: 'Image Tampering Detected',
-          detail: `Image with path "${imageItem.filepath || 'unknown'}" has been tampered with, contact your administrator`,
-          life: 5000
-        });
-      }
-    }
-  };
-
-  // Main image template
-  const itemTemplate = (item) => {
-    return (
-      <img
-        src={item}
-        alt="Case"
-        style={{ width: '100%', height: '500px', objectFit: 'cover' }}
-        onError={(e) => handleImageError(e, item)}
-      />
-    );
-  };
-
-  // Thumbnail template (optional, required for display in many PrimeReact versions)
-  const thumbnailTemplate = (item) => {
-    return (
-      <img
-        src={item}
-        alt="Thumbnail"
-        style={{ width: '100%', height: '100px', objectFit: 'cover' }}
-        onError={(e) => handleImageError(e, item)}
-      />
-    );
-  };
+  const thumbnailTemplate = (item) => (
+    <img
+      src={item}
+      alt="Thumbnail"
+      style={{ width: '100%', height: '100px', objectFit: 'cover' }}
+    />
+  );
 
   return (
     <div className="p-4">
       <Toast ref={toast} />
+
+      {/* <h1 className="screen-title" style={{ paddingBottom: "0px", marginBottom: "0px" }}>Gallery</h1> */}
+
+      {uploadSuccess && (
+        <p className="text-green-500 mb-2">Image uploaded successfully!</p>
+      )}
+      {uploadError && (
+        <p className="text-red-500 mb-2">Upload error: {uploadError}</p>
+      )}
+
+      {loading && <p>Loading images...</p>}
+      {error && <p className="text-red-500">Error loading images: {error}</p>}
+
+      {!loading && !error && images.length === 0 && (
+        <p>No images found for this case.</p>
+      )}
+
+      {!loading && !error && images.length > 0 && (
+        <div style={{ transform: 'scale(0.7)', marginTop: "-80px", marginBottom: "-80px" }}>
+          <Galleria
+            value={images}
+            circular
+            showThumbnails
+            numVisible={5}
+            item={itemTemplate}
+            thumbnail={thumbnailTemplate}
+            className="custom-galleria"
+            style={{ maxWidth: '900px', margin: 'auto' }}
+          />
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-semibold">Gallery</h1>
+
         <div>
           <button
             onClick={handleUploadClick}
             className="p-button p-component p-button-primary"
             disabled={uploading}
+            style={{ backgroundColor: "grey", color: "white", marginTop: "0px"}}
           >
             {uploading ? 'Uploading...' : 'Upload Image'}
           </button>
@@ -219,33 +227,6 @@ export default function GalleryScreen() {
         </div>
       </div>
 
-      {uploadSuccess && (
-        <p className="text-green-500 mb-2">Image uploaded successfully!</p>
-      )}
-      {uploadError && (
-        <p className="text-red-500 mb-2">Upload error: {uploadError}</p>
-      )}
-
-      {loading && <p>Loading images...</p>}
-
-      {error && <p className="text-red-500">Error loading images: {error}</p>}
-
-      {!loading && !error && images.length === 0 && (
-        <p>No images found for this case.</p>
-      )}
-
-      {!loading && !error && images.length > 0 && (
-        <Galleria
-          value={images}
-          circular
-          showThumbnails
-          numVisible={5}
-          item={itemTemplate}
-          thumbnail={thumbnailTemplate}
-          className="custom-galleria"
-          style={{ maxWidth: '800px', margin: 'auto' }}
-        />
-      )}
     </div>
   );
 }

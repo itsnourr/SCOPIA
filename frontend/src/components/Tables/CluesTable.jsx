@@ -332,6 +332,7 @@ export default function CluesTable() {
             label="Save"
             icon="pi pi-check"
             onClick={saveClue}
+            style={{ color: "white" }}
           />
         </div>
       </Dialog>

@@ -52,6 +52,13 @@ export default function CaseSidebar() {
       template: itemTemplate,
     },
     {
+      label: "Suspects",
+      icon: "pi pi-user",
+      path: "suspects",
+      command: () => navigate("suspects"),
+      template: itemTemplate,
+    },
+    {
       label: "Gallery",
       icon: "pi pi-images",
       path: "gallery",
@@ -63,6 +70,14 @@ export default function CaseSidebar() {
       icon: "pi pi-box",
       path: "studio",
       command: () => navigate("studio"),
+      template: itemTemplate,
+    },
+    {
+      label: "Pipeline",
+      // change icon to something pipeline related
+      icon: "pi pi-play",
+      path: "pipeline",
+      command: () => navigate("pipeline"),
       template: itemTemplate,
     },
     {

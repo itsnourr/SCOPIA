@@ -1,5 +1,5 @@
 import axios from "axios";
-import { navigate } from "@reach/router";
+// import { navigate } from "@react/router";
 
 const API = "http://localhost:8443/api/user"; 
 
@@ -19,13 +19,46 @@ export const signup = (username, password) => {
 
 export const logout = () => {
   localStorage.removeItem("currentUserId");
-  navigate("/login");
+  // navigate("/login");
 }
 
-export const mapUserIdToUsername = (userId) => {
-  return axios.get(`${API}/id/${userId}/username`);
+// export const mapUserIdToUsername = (userId) => {
+//   const res =  axios.get(`${API}/id/${userId}/username`);
+//   console.log(res);
+//   return res.data.username;    
+// };
+
+export const mapUserIdToUsername = async (userId) => {
+  const res = await axios.get(`${API}/id/${userId}/username`);
+  console.log("returned" + res.data); // 
+  return res.data; // just return the string
+};
+
+export const mapUserIdToUsernameByBulk = async (userIds) => {
+  const res = await axios.get(`${API}/usernames`, {
+    params: { ids: userIds } // axios handles ?ids=1,2,3
+  });
+
+  return res.data; // { 1: "john", 2: "sarah" }
 };
 
 export const getCurrentUserId = () => {
   return localStorage.getItem("currentUserId");
 };
+
+// Returns the currently logged-in username
+export function getCurrentUsername() {
+  return "karim";
+}
+
+// Validates the provided password
+// For now, always returns true (hardcoded)
+export function validatePassword(password) {
+  return true;
+}
+
+// Changes the password
+// Currently does nothing (placeholder for future backend call)
+export function changePassword(newPassword) {
+  // Intentionally empty for now
+}
