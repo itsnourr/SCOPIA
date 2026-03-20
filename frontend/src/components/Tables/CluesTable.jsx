@@ -10,8 +10,8 @@ import "./CluesTable.css";
 import UserSelector from "../Selectors/UserSelector"; // adjust path if needed
 
 import {
-  getAllClues,
-  createClue,
+  getCluesByCaseId,
+  createClueToCase,
   updateClue,
   deleteClue
 } from "../../services/clueService";
@@ -46,7 +46,11 @@ export default function CluesTable() {
 
   const loadClues = async () => {
     setLoading(true);
-    const res = await getAllClues();
+    // const caseId = window.location.pathname.split("/").pop();
+    // the path ends with /caseid/clues, so before the last 
+    const pathParts = window.location.pathname.split("/");
+    const caseId = pathParts[pathParts.length - 2];
+    const res = await getCluesByCaseId(caseId);
     console.log(res.data);
     setClues(res.data);
     setLoading(false);
@@ -75,7 +79,10 @@ export default function CluesTable() {
     };
 
     if (dialogMode === "create") {
-      const res = await createClue(payload);
+      const pathParts = window.location.pathname.split("/");
+      const caseId = pathParts[pathParts.length - 2];
+      // console.log("THE CASE_ID IS " + caseId);
+      const res = await createClueToCase(caseId, payload);
       setClues((prev) => [...prev, res.data]);
     } else {
       await updateClue(payload.clueId, payload);

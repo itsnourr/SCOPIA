@@ -20,6 +20,19 @@ public class CaseController {
     @Autowired
     private CaseService caseService;
 
+    // get case by id
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCaseById(@PathVariable Long id) {
+        try {
+            Case caseEntity = caseRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Case not found with id: " + id));
+            return ResponseEntity.ok(caseEntity);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving case: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllCases() {
         try {
@@ -83,6 +96,40 @@ public class CaseController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error creating case: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/archive/{id}")
+    public ResponseEntity<?> archiveCase(@PathVariable Long id) {
+        try {
+            caseService.archiveCase(id);
+            return ResponseEntity.ok("Case archived successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error archiving case: " + e.getMessage());
+        }
+    }
+
+    // update case details
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateCase(@PathVariable Long id, @RequestBody Case updatedCase) {
+        try {
+            Case existingCase = caseRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Case not found with id: " + id));
+
+            existingCase.setDescription(updatedCase.getDescription());
+            existingCase.setStatus(updatedCase.getStatus());
+            existingCase.setLocation(updatedCase.getLocation());
+            existingCase.setCoordinates(updatedCase.getCoordinates());
+            existingCase.setReportDate(updatedCase.getReportDate());
+            existingCase.setCrimeTime(updatedCase.getCrimeTime());
+            existingCase.setCaseKey(updatedCase.getCaseKey());
+
+            Case savedCase = caseRepository.save(existingCase);
+            return ResponseEntity.ok(savedCase);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating case: " + e.getMessage());
         }
     }
 }

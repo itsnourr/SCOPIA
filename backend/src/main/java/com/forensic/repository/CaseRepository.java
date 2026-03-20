@@ -11,6 +11,7 @@ public interface CaseRepository extends JpaRepository<Case, Long> {
     List<Case> findByStatus(String status);
     Page<Case> findByStatus(String status, Pageable pageable);
     List<Case> findByStatusIgnoreCase(String status);
+    List<Case> findByCaseIdInAndStatus(List<Long> caseIds, String status);
     // List<Case> findByStatusAndAssignedTo(String status, String assignedTo);
 }
 

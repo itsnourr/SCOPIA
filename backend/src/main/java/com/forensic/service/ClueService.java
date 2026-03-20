@@ -18,6 +18,10 @@ public class ClueService {
         return clueRepository.findAll(pageable);
     }
 
+    public Page<Clue> getCluesByCaseIdWithPagination(Long caseId, Pageable pageable) {
+        return clueRepository.findByCaseId(caseId, pageable);
+    }
+
     @Transactional
     public Clue addClue(Clue clue) {
         // Ensure pickerId corresponds to valid user (optional validation)

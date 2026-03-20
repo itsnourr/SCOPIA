@@ -45,6 +45,9 @@ public class Case {
 
     @Column(name = "crime_time")
     private LocalDateTime crimeTime;
+
+    @Column(name = "case_key")
+    private String caseKey;
     
     @PrePersist
     protected void onCreate() {

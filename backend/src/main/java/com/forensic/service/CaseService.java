@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class CaseService {
@@ -33,15 +33,41 @@ public class CaseService {
         Long userId = userRepository.findIdByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"))
             .getUserId();
-        return caseAssignmentRepository.findByStatusAndAssignedTo("open", userId);
+        System.out.println("Username " + username + " has id " + userId + "...");
+        List<Long> caseIds = caseAssignmentRepository.findCaseIdsByUserId(userId);
+        System.out.println("Cases with ids: " + caseIds);
+        if (caseIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 3️⃣ Get Cases with status 'open'
+        return caseRepository.findByCaseIdInAndStatus(caseIds, "open");
+        // return caseAssignmentRepository.findByStatusAndAssignedTo("open", userId);
     }
 
+    
     public List<Case> listArchivedCasesByUsername(String username) {
         Long userId = userRepository.findIdByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"))
             .getUserId();
-        return caseAssignmentRepository.findByStatusAndAssignedTo("archived", userId);
+        System.out.println("Username " + username + " has id " + userId + "...");
+        List<Long> caseIds = caseAssignmentRepository.findCaseIdsByUserId(userId);
+        System.out.println("Cases with ids: " + caseIds);
+        if (caseIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 3️⃣ Get Cases with status 'open'
+        return caseRepository.findByCaseIdInAndStatus(caseIds, "archived");
+        // return caseAssignmentRepository.findByStatusAndAssignedTo("open", userId);
     }
+
+    // public List<Case> listArchivedCasesByUsername(String username) {
+    //     Long userId = userRepository.findIdByUsername(username)
+    //         .orElseThrow(() -> new RuntimeException("User not found"))
+    //         .getUserId();
+    //     return caseAssignmentRepository.findByStatusAndAssignedTo("archived", userId);
+    // }
 
     public Page<Case> listActiveCasesWithPagination(Pageable pageable) {
         return caseRepository.findByStatus("open", pageable);

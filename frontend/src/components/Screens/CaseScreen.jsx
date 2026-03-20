@@ -1,20 +1,15 @@
 import React from "react";
+import { useEffect } from "react";
+
+import { getCaseById } from "../../services/caseService";
+import { getTeamByCaseId } from "../../services/teamService";
+import { mapUserIdToUsernameByBulk } from "../../services/userService";
 
 export default function CaseScreen() {
-  const caseData = {
-    description:
-      "Burglary reported at a residential property. Forced entry through rear door. Multiple electronic items missing. There's a lot more details that are yet to be uncovered during investigation time, but for now, and by the looks of it, it defintely looks way more suspicious than it actually should be, according to our expert team.",
-    status: "Open",
-    caseKey: "BYB-201",
-    location: "Blat, Byblos",
-    coordinates: {
-      lat: 40.7128,
-      lng: -74.006,
-    },
-    reportDate: "2026-02-20",
-    crimeTime: "2026-02-19 23:45",
-    teamMembers: ["Nour Rajeh", "Sami Trad", "Cezar El Khatib"],
-  };
+
+  const [currentCaseid, setCurrentCaseId] = React.useState(-1);
+  const [caseData, setCaseData] = React.useState(null);
+  const [teamMembers, setTeamMembers] = React.useState([]);
 
   const labelStyle = {
     color: "#9ca3af",
@@ -29,6 +24,39 @@ export default function CaseScreen() {
     fontWeight: "500",
     color: "#f3f4f6",
   };
+
+  useEffect(() => {
+    // read caseid from route, we are at /case/4 might contain /info at the end
+    const pathParts = window.location.pathname.split("/");
+    const caseId = pathParts[pathParts.length - 1] === "info" ? pathParts[pathParts.length - 2] : pathParts[pathParts.length - 1];
+    setCurrentCaseId(caseId);
+
+    const fetchCaseData = async () => {
+      try {
+        const data = await getCaseById(caseId);
+        setCaseData(data);
+      }
+      catch (error) {
+        console.error("Error fetching case data:", error);
+      }
+    };
+
+    const fetchTeamMembers = async () => {
+      try {
+        const teamData = await getTeamByCaseId(caseId);
+        const userIds = teamData.data.userIds;
+        const idToUsernameMap = await mapUserIdToUsernameByBulk(userIds);
+        const usernames = userIds.map(id => idToUsernameMap[id] || `User ${id}`);
+        setTeamMembers(usernames);
+      }
+      catch (error) {
+        console.error("Error fetching team members:", error);
+      }
+    };
+
+    fetchCaseData();
+    fetchTeamMembers();
+  }, []);
 
   return (
     <div style={{ padding: "40px", color: "#f3f4f6" }}>
@@ -45,13 +73,14 @@ export default function CaseScreen() {
           padding: "30px",
           boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
           backdropFilter: "blur(6px)",
+          width: "700px",
         }}
       >
         {/* Description */}
         <div style={{ marginBottom: "30px" }}>
           <div style={{...labelStyle, textAlign: "start"}}>Description</div>
           <div style={{ ...valueStyle, lineHeight: "1.6", maxWidth: "800px", textAlign: "start" }}>
-            {caseData.description}
+            {caseData?.description}
           </div>
         </div>
 
@@ -69,7 +98,7 @@ export default function CaseScreen() {
         >
           <div>
             <div style={labelStyle}>Identifier</div>
-            <div style={valueStyle}>{caseData.caseKey}</div>
+            <div style={valueStyle}>{caseData?.caseKey}</div>
           </div>
 
           <div style={{ marginTop: "-6px" }}>
@@ -86,30 +115,30 @@ export default function CaseScreen() {
               border: "1px solid rgba(34,197,94,0.3)",
             }}
           >
-            {caseData.status}
+            {caseData?.status}
           </span>
         </div>
 
           <div>
             <div style={labelStyle}>Location</div>
-            <div style={valueStyle}>{caseData.location}</div>
+            <div style={valueStyle}>{caseData?.location}</div>
           </div>
 
           <div>
             <div style={labelStyle}>Coordinates</div>
-            <div style={valueStyle}>
-              {caseData.coordinates.lat}, {caseData.coordinates.lng}
+            <div style={valueStyle}> 
+              ({caseData?.coordinates})
             </div>
           </div>
 
           <div>
             <div style={labelStyle}>Report Date</div>
-            <div style={valueStyle}>{caseData.reportDate}</div>
+            <div style={valueStyle}>{caseData?.reportDate?.split("T")[0]}</div>
           </div>
 
           <div>
             <div style={labelStyle}>Crime Time</div>
-            <div style={valueStyle}>{caseData.crimeTime}</div>
+            <div style={valueStyle}>{caseData?.crimeTime?.split("T")[1]?.split(".")[0]}</div>
           </div>
         </div>
 
@@ -120,7 +149,7 @@ export default function CaseScreen() {
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px"}}>
-            {caseData.teamMembers.map((member, index) => (
+            {teamMembers.map((member, index) => (
               <div
                 key={index}
                 style={{
@@ -132,7 +161,7 @@ export default function CaseScreen() {
                   fontWeight: "500",
                 }}
               >
-                {member}
+                {member.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
               </div>
             ))}
           </div>

@@ -2,12 +2,15 @@ package com.forensic.controller;
 
 import com.forensic.entity.Clue;
 import com.forensic.repository.ClueRepository;
+import com.forensic.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+// import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -16,6 +19,9 @@ public class ClueController {
 
     @Autowired
     private ClueRepository clueRepository;
+
+    @Autowired
+    private ClueService clueService;
 
     /**
      * GET /api/clue/all
@@ -29,6 +35,34 @@ public class ClueController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error retrieving clues: " + e.getMessage());
+        }
+    }
+
+    /**
+     * GET /api/clue/case/{caseId}
+     * Returns all clues for a specific case
+     */
+    @GetMapping("/case/{caseId}")
+    public ResponseEntity<?> getCluesByCaseId(@PathVariable Long caseId) {
+        try {
+            List<Clue> clues = clueService.getCluesByCaseIdWithPagination(caseId, Pageable.unpaged()).getContent();
+            return ResponseEntity.ok(clues);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving clues for case: " + e.getMessage());
+        }
+    }
+
+    // add clue to a case
+    @PostMapping("/case/{caseId}")
+    public ResponseEntity<?> addClueToCase(@PathVariable Long caseId, @RequestBody Clue clue) {
+        try {
+            clue.setCaseId(caseId); // Ensure the clue is associated with the correct case
+            Clue savedClue = clueService.addClue(clue);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedClue);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding clue to case: " + e.getMessage());
         }
     }
 
@@ -54,13 +88,10 @@ public class ClueController {
         }
     }
 
-    /**
-     * POST /api/clue/create
-     * Creates a new clue
-     */
-    @PostMapping("/create")
-    public ResponseEntity<?> createClue(@RequestBody Clue clue) {
+    @PostMapping("/create/case/{caseId}")
+    public ResponseEntity<?> createClue(@PathVariable Long caseId, @RequestBody Clue clue) {
         try {
+            clue.setCaseId(caseId);
             Clue savedClue = clueRepository.save(clue);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedClue);
         } catch (Exception e) {
@@ -69,10 +100,6 @@ public class ClueController {
         }
     }
 
-    /**
-     * PUT /api/clue/update/{id}
-     * Updates an existing clue
-     */
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateClue(
             @PathVariable Long id,

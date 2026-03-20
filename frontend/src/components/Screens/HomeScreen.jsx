@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import './HomeScreen.css';
 
-import { getMyOpenCases, createCase } from "../../services/CaseService";
+import { getMyOpenCases, createCase, archiveCase } from "../../services/caseService";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -199,6 +199,18 @@ export default function HomeScreen() {
                     subTitle={caseItem.title}
                     className="case-card"
                   />
+                  {/* arhive button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      archiveCase(caseId)
+                        .then(() => fetchCases())
+                        .catch(err => console.error("Error archiving case:", err));
+                    }}
+                    className="p-button p-component p-button-danger archive-button"
+                  >
+                    Archive
+                  </button>
                 </div>
 
               );

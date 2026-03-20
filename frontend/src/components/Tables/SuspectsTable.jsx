@@ -7,8 +7,9 @@ import { Dialog } from "primereact/dialog";
 import "./CluesTable.css";
 
 import {
-  getAllSuspects,
+  getSuspectsByCaseId,
   createSuspect,
+  createSuspectToCase,
   updateSuspect,
   deleteSuspect
 } from "../../services/suspectService";
@@ -19,9 +20,9 @@ export default function SuspectsTable() {
 
   const emptySuspect = () => ({
     suspectId: null,
-    full_name: "",
+    fullName: "",
     alias: "",
-    date_of_birth: "",
+    dateOfBirth: "",
     nationality: ""
   });
 
@@ -40,7 +41,9 @@ export default function SuspectsTable() {
 
   const loadSuspects = async () => {
     setLoading(true);
-    const res = await getAllSuspects();
+    const pathParts = window.location.pathname.split("/");
+    const caseId = pathParts[pathParts.length - 2];
+    const res = await getSuspectsByCaseId(caseId);
     setSuspects(res.data);
     setLoading(false);
   };
@@ -61,7 +64,10 @@ export default function SuspectsTable() {
 
   const saveSuspect = async () => {
     if (dialogMode === "create") {
-      const res = await createSuspect(newSuspect);
+      const pathParts = window.location.pathname.split("/");
+      const caseId = pathParts[pathParts.length - 2];
+      // const res = await createSuspect(newSuspect);
+      const res = await createSuspectToCase(caseId, newSuspect);
       setSuspects((prev) => [...prev, res.data]);
     } else {
       await updateSuspect(newSuspect.suspectId, newSuspect);
@@ -115,9 +121,9 @@ export default function SuspectsTable() {
           style={{ width: "900px"}}
         >
           <Column field="suspectId" header="ID" style={{ width: "40px" }} />
-          <Column field="full_name" header="Full Name" />
+          <Column field="fullName" header="Full Name" />
           <Column field="alias" header="Alias" />
-          <Column field="date_of_birth" header="Date of Birth" />
+          <Column field="dateOfBirth" header="Date of Birth" />
           <Column field="nationality" header="Nationality" />
           <Column body={editTemplate} style={{ width: "4rem" }} />
           <Column body={deleteTemplate} style={{ width: "4rem" }} />
@@ -145,9 +151,9 @@ export default function SuspectsTable() {
 
           <label>Full Name</label>
           <InputText
-            value={newSuspect.full_name}
+            value={newSuspect.fullName}
             onChange={(e) =>
-              setNewSuspect({ ...newSuspect, full_name: e.target.value })
+              setNewSuspect({ ...newSuspect, fullName: e.target.value })
             }
           />
 
@@ -162,9 +168,9 @@ export default function SuspectsTable() {
           <label>Date of Birth</label>
           <InputText
             type="date"
-            value={newSuspect.date_of_birth}
+            value={newSuspect.dateOfBirth}
             onChange={(e) =>
-              setNewSuspect({ ...newSuspect, date_of_birth: e.target.value })
+              setNewSuspect({ ...newSuspect, dateOfBirth: e.target.value })
             }
           />
 

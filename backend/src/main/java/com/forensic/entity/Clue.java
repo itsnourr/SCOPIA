@@ -17,6 +17,9 @@ public class Clue {
     @Column(name = "clue_id")
     private Long clueId;
 
+    @Column(name = "case_id", nullable = false)
+    private Long caseId;
+
     @Column(length = 100)
     private String type;
 
