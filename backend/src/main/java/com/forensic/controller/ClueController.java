@@ -100,6 +100,17 @@ public class ClueController {
         }
     }
 
+    @PostMapping("/create/rover/{caseId}")
+    public ResponseEntity<?> addRoverCluesByBulk(@PathVariable Long caseId, @RequestBody List<Clue> clues) {
+        try {
+            clueService.addRoverCluesByBulk(caseId, clues);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Rover clues added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding rover clues: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateClue(
             @PathVariable Long id,

@@ -9,6 +9,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface ClueRepository extends JpaRepository<Clue, Long> {
     Page<Clue> findAll(Pageable pageable);
-    Page<Clue> findByCaseId(Long caseId, Pageable pageable); // now list not page
-    // List<Clue> findByCaseId(Long caseId);
+    Page<Clue> findByCaseId(Long caseId, Pageable pageable); 
 }

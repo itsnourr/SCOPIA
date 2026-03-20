@@ -27,4 +27,15 @@ public class ClueService {
         // Ensure pickerId corresponds to valid user (optional validation)
         return clueRepository.save(clue);
     }
+
+    // add clues by bulk with pickerid = 0 for rover given caseid
+    @Transactional
+    public void addRoverCluesByBulk(Long caseId, Iterable<Clue> clues) {
+        for (Clue clue : clues) {
+            clue.setCaseId(caseId);
+            clue.setPickerId(0L); // 0 indicates rover
+        }
+        clueRepository.saveAll(clues);
+    }
+
 }

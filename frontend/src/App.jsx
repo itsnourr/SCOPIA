@@ -23,6 +23,7 @@ import HomeLayout from './components/Layouts/HomeLayout.jsx';
 import ChatbotScreen from './components/Screens/ChatbotScreen.jsx';
 import CatalogScreen from './components/Screens/CatalogScreen.jsx'; 
 import PipelineScreen from './components/Screens/PipelineScreen.jsx';
+import RoverScreen from './components/Screens/RoverScreen.jsx';
 
 function App() {
 
@@ -51,9 +52,10 @@ function App() {
                       <Route path="info" element={<CaseScreen />} /> 
                       <Route path="clues" element={<CluesScreen />} />
                       <Route path="suspects" element={<SuspectsScreen />} />
-                      <Route path="gallery" element={<GalleryScreen />} /> {/* with upload */}
+                      <Route path="gallery" element={<GalleryScreen />} /> 
                       <Route path="studio" element={<StudioScreen />} />
                       <Route path="pipeline" element={<PipelineScreen />} />
+                      <Route path="rover" element={<RoverScreen />} />
                       <Route path="graph" element={<GraphScreen />} />
                     </Route>
                 </Routes>

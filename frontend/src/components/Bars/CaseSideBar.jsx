@@ -74,10 +74,16 @@ export default function CaseSidebar() {
     },
     {
       label: "Pipeline",
-      // change icon to something pipeline related
       icon: "pi pi-play",
       path: "pipeline",
       command: () => navigate("pipeline"),
+      template: itemTemplate,
+    },
+    {
+      label: "Rover",
+      icon: "pi pi-wifi",
+      path: "rover",
+      command: () => navigate("rover"),
       template: itemTemplate,
     },
     {

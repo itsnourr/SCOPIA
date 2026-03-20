@@ -8,6 +8,11 @@ export const getCaseById = async (caseId) => {
   return response.data;
 }
 
+export const getCaseKeyById = async (caseId) => {
+  const response = await axios.get(`${API}/${caseId}`);
+  return response.data.caseKey;
+};
+
 export const getAllCases = async () => {
   const response = await axios.get(`${API}/all`);
   return response.data;

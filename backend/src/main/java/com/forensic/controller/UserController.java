@@ -176,6 +176,70 @@ public class UserController {
         }
     }
 
-    
+    // password/validate
+    @PostMapping("/password/validate")
+    public ResponseEntity<?> validatePassword(@RequestBody AuthRequest request) {
+        try {
+            // Find user by username
+            Optional<User> userOptional = userRepository.findByUsername(request.getUsername());
+            
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User not found with username: " + request.getUsername());
+            }
+            
+            User user = userOptional.get();
+            
+            // Verify password using stored hash and salt
+            boolean isValid = passwordService.verifyPassword(
+                    request.getPassword(),
+                    user.getPassword(),
+                    user.getSalt()
+            );
+            
+            if (!isValid) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid password");
+            }
+            
+            return ResponseEntity.ok("Password is valid");
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error validating password: " + e.getMessage());
+        }
+    }
+
+    // change password
+    @PostMapping("/password/change")
+    public ResponseEntity<?> changePassword(@RequestBody AuthRequest request) {
+        try {
+            // Find user by username
+            Optional<User> userOptional = userRepository.findByUsername(request.getUsername());
+            
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User not found with username: " + request.getUsername());
+            }
+            
+            User user = userOptional.get();
+            
+            // Generate new salt and hash the new password
+            String newSalt = passwordService.generateSalt();
+            String newHashedPassword = passwordService.hashPassword(request.getPassword(), newSalt);
+            
+            // Update user's password and salt
+            user.setPassword(newHashedPassword);
+            user.setSalt(newSalt);
+            userRepository.save(user);
+            
+            return ResponseEntity.ok("Password changed successfully");
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error changing password: " + e.getMessage());
+        }
+    }
+
 }
 

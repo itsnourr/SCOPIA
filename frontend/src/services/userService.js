@@ -48,17 +48,18 @@ export const getCurrentUserId = () => {
 
 // Returns the currently logged-in username
 export function getCurrentUsername() {
-  return "karim";
+  const userId = getCurrentUserId();
+  if (!userId) {
+    return null; // No user logged in
+  }
+  return mapUserIdToUsername(userId); // Returns a promise that resolves to the username
 }
 
-// Validates the provided password
-// For now, always returns true (hardcoded)
 export function validatePassword(password) {
-  return true;
+  return axios.post(`${API}/password/validate`, 
+    { username: getCurrentUsername(), password: password });
 }
 
-// Changes the password
-// Currently does nothing (placeholder for future backend call)
 export function changePassword(newPassword) {
-  // Intentionally empty for now
+  return axios.post(`${API}/password/change`, { username: getCurrentUsername(), password: newPassword });
 }

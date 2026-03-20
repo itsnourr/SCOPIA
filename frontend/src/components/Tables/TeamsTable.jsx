@@ -13,11 +13,11 @@ import {
   getTeamByCaseId,
   addMemberToTeam,
   removeMemberFromTeam
-} from "../../services/TeamService";
+} from "../../services/teamService";
 
 import {
   getAllActiveCases
-} from "../../services/CaseService";
+} from "../../services/caseService";
 
 import "../../App.css"
 import { mapUserIdToUsernameByBulk } from "../../services/userService";

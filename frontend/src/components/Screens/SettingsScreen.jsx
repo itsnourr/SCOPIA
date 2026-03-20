@@ -35,12 +35,14 @@ export default function SettingsPage() {
       return;
     }
 
-    changePassword(newPassword);
-
-    setIsError(false);
-    setMessage("Password changed successfully.");
-    setCurrentPassword("");
-    setNewPassword("");
+    changePassword(newPassword)
+      .then(() => {
+        setIsError(false);
+        setMessage("Password changed successfully.");
+        setCurrentPassword("");
+        setNewPassword("");
+      }
+    );
   };
 
   const labelStyle = {
@@ -78,7 +80,7 @@ export default function SettingsPage() {
         }}
       >
         {/* Username */}
-        <div style={{ marginBottom: "30px" }}>
+        {/* <div style={{ marginBottom: "30px" }}>
           <div style={labelStyle}>Username</div>
           <div
             style={{
@@ -89,7 +91,7 @@ export default function SettingsPage() {
           >
             {username}
           </div>
-        </div>
+        </div> */}
 
         {/* Current Password */}
         <div style={{ marginBottom: "20px" }}>
@@ -131,7 +133,7 @@ export default function SettingsPage() {
           Change Password
         </button>
         <br />
-        <button
+        {/* <button
           onClick={logout}
           style={{
             padding: "12px 20px",
@@ -147,7 +149,7 @@ export default function SettingsPage() {
           }}
         >
           Logout
-        </button>
+        </button> */}
 
         {/* Message */}
         {message && (
