@@ -110,7 +110,17 @@ public class CaseController {
         }
     }
 
-    // update case details
+    @PostMapping("/reopen/{id}")
+    public ResponseEntity<?> reopenCase(@PathVariable Long id) {
+        try {
+            caseService.reopenCase(id);
+            return ResponseEntity.ok("Case reopened successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error reopening case: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateCase(@PathVariable Long id, @RequestBody Case updatedCase) {
         try {

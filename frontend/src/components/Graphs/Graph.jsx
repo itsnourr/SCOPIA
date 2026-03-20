@@ -15,38 +15,16 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-/**
- * ==============================
- * Dummy DB-like data
- * ==============================
- */
-
-const suspects = [
-  { suspect_id: 1, name: "Suspect A" },
-  { suspect_id: 2, name: "Suspect B" },
-];
-
-const clues = [{ clue_id: 100, label: "Clue X" }];
-
-const suspectById = Object.fromEntries(
-  suspects.map((s) => [s.suspect_id, s])
-);
-const clueById = Object.fromEntries(
-  clues.map((c) => [c.clue_id, c])
-);
-
-/**
- * ==============================
- * Helpers
- * ==============================
- */
+import { getCluesByCaseId } from "../../services/clueService";
+import { getSuspectsByCaseId } from "../../services/suspectService";
+import { loadGraph, saveGraph as saveGraphApi } from "../../services/graphService";
 
 function resolveNodeLabel(node) {
   if (node.node_type === "SUSPECT") {
-    return suspectById[node.node_reference]?.name ?? "Unknown Suspect";
+    return suspectById[node.node_reference]?.fullName ?? "Unknown Suspect";
   }
   if (node.node_type === "CLUE") {
-    return clueById[node.node_reference]?.label ?? "Unknown Clue";
+    return clueById[node.node_reference]?.type ?? "Unknown Clue";
   }
   return "Unknown";
 }
@@ -72,12 +50,6 @@ function createStyledEdge(base) {
   };
 }
 
-/**
- * ==============================
- * Component
- * ==============================
- */
-
 export default function Graph() {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -90,6 +62,113 @@ export default function Graph() {
   const [selectedClueId, setSelectedClueId] = useState("");
 
   const [existsGraph, setExistsGraph] = useState(false);
+
+  const [currentCaseId, setCurrentCaseId] = useState(-1);
+  const [caseSuspects, setCaseSuspects] = useState([]);
+  const [caseClues, setCaseClues] = useState([]);
+  const [suspectById, setSuspectById] = useState({});
+  const [clueById, setClueById] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pathParts = window.location.pathname.split("/");
+        const caseId = pathParts[pathParts.length - 2];
+        setCurrentCaseId(caseId);
+
+        const cluesResponse = await getCluesByCaseId(caseId);
+        const suspectsResponse = await getSuspectsByCaseId(caseId);
+
+        setCaseClues(cluesResponse.data);
+        setCaseSuspects(suspectsResponse.data);
+
+        const suspectMap = Object.fromEntries(
+          suspectsResponse.data.map((s) => [s.suspectId, s])
+        );
+        const clueMap = Object.fromEntries(
+          cluesResponse.data.map((c) => [c.clueId, c])
+        );
+
+        setSuspectById(suspectMap);
+        setClueById(clueMap);
+
+        // 🔥 LOAD GRAPH HERE
+        const graphRes = await loadGraph(caseId);
+        const graph = graphRes.data;
+
+        if (graph.nodes.length > 0 || graph.links.length > 0) {
+          setExistsGraph(true);
+
+          // convert backend nodes → ReactFlow nodes
+          const rfNodes = graph.nodes.map((n) => {
+            const isSuspect = n.nodeType === "SUSPECT";
+
+            const labelText = isSuspect
+              ? suspectMap[n.nodeReference]?.fullName
+              : clueMap[n.nodeReference]?.type;
+
+            return {
+              id: String(n.nodeId),
+              position: { x: n.posX, y: n.posY },
+              draggable: true,
+
+              data: {
+                node_type: n.nodeType,
+                node_reference: n.nodeReference,
+                label: (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <i
+                      className={`pi ${isSuspect ? "pi-user" : "pi-search"}`}
+                      style={{
+                        fontSize: 18,
+                        color: isSuspect ? "#e74c3c" : "#f1c40f",
+                      }}
+                    />
+                    <div>{labelText || "Unknown"}</div>
+                  </div>
+                ),
+              },
+
+              style: {
+                padding: "10px 12px 12px",
+                borderRadius: 10,
+                border: `2px solid ${isSuspect ? "#e74c3c" : "#f1c40f"}`,
+                background: isSuspect ? "#2b1d1d" : "#2a2617",
+                color: "#fff",
+                minWidth: 140,
+                textAlign: "center",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.35)",
+              },
+            };
+          });
+
+          // convert backend links → ReactFlow edges
+          const rfEdges = graph.links.map((l) =>
+            createStyledEdge({
+              id: String(l.linkId),
+              source: String(l.nodeIdFrom),
+              target: String(l.nodeIdTo),
+              label: l.linkDesc || "",
+            })
+          );
+
+          setNodes(rfNodes);
+          setEdges(rfEdges);
+        }
+      } catch (error) {
+        console.error("Error fetching case data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   /**
    * ==============================
@@ -255,13 +334,49 @@ export default function Graph() {
     setIsEditingEdgeLabel(true);
   }, []);
 
-  const saveGraph = () => {};
+  const saveGraph = async () => {
+    try {
+      const nodeIdMap = {};
 
-  /**
-   * ==============================
-   * Render
-   * ==============================
-   */
+      const preparedNodes = nodes.map((n, index) => {
+        nodeIdMap[n.id] = index; // 👈 map to index
+
+        return {
+          nodeId: null,
+          caseId: currentCaseId,
+          nodeType: n.data.node_type,
+          nodeReference: Number(n.data.node_reference),
+          posX: n.position.x,
+          posY: n.position.y,
+        };
+      });
+
+      const preparedLinks = edges.map((e) => ({
+        linkId: null,
+        caseId: currentCaseId,
+
+        nodeIdFrom: nodeIdMap[e.source], // 👈 index
+        nodeIdTo: nodeIdMap[e.target],
+
+        linkDesc: e.label || "",
+        bidirectional: e.data?.directionState === 1,
+      }));
+
+      const graphDto = {
+        caseId: currentCaseId,
+        nodes: preparedNodes,
+        links: preparedLinks,
+      };
+
+      console.log("Saving graph:", graphDto);
+
+      await saveGraphApi(graphDto);
+
+      console.log("Graph saved successfully");
+    } catch (error) {
+      console.error("Error saving graph:", error);
+    }
+  };
 
   return (
     <div style={{ width: "1000px", height: "500px" }}>
@@ -304,9 +419,9 @@ export default function Graph() {
               style={{ width: "100%", marginBottom: 6, backgroundColor: "#e74c3c", border: 0, borderRadius: 6 }}
             >
               <option value="">Select suspect</option>
-              {suspects.map((s) => (
-                <option key={s.suspect_id} value={s.suspect_id}>
-                  {s.name}
+              {caseSuspects.map((s) => (
+                <option key={s.suspectId} value={s.suspectId}>
+                  {s.fullName}
                 </option>
               ))}
             </select>
@@ -318,7 +433,7 @@ export default function Graph() {
                 addNode(
                   "SUSPECT",
                   selectedSuspectId,
-                  suspectById[selectedSuspectId].name
+                  suspectById[selectedSuspectId].fullName
                 )
               }
             >
@@ -331,9 +446,9 @@ export default function Graph() {
               style={{ width: "100%", marginBottom: 8, backgroundColor: "#f1c40f", border: 0, borderRadius: 6 }}
             >
               <option value="">Select clue</option>
-              {clues.map((c) => (
-                <option key={c.clue_id} value={c.clue_id}>
-                  {c.label}
+              {caseClues.map((c) => (
+                <option key={c.clueId} value={c.clueId}>
+                  {c.type}
                 </option>
               ))}
             </select>
@@ -345,7 +460,7 @@ export default function Graph() {
                 addNode(
                   "CLUE",
                   selectedClueId,
-                  clueById[selectedClueId].label
+                  clueById[selectedClueId].type
                 )
               }
             >

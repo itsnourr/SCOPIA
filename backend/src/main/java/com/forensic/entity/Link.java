@@ -19,8 +19,8 @@ public class Link {
     @Column(name = "link_id")
     private Long linkId;
 
-    @Column(name = "case_key", nullable = false, length = 50)
-    private String caseKey;
+    @Column(name = "case_id", nullable = false)
+    private Long caseId;
 
     @Column(name = "node_id_from", nullable = false)
     private Long nodeIdFrom;

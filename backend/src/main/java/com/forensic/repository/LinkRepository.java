@@ -6,9 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LinkRepository extends JpaRepository<Link, Long> {
-    List<Link> findByCaseKey(String caseKey);
-    void deleteByCaseKeyAndNodeIdFromOrNodeIdTo(
-        String caseKey, Long from, Long to
-    );
+    // List<Link> findByCaseKey(String caseKey);
+    // void deleteByCaseKeyAndNodeIdFromOrNodeIdTo(
+    //     String caseKey, Long from, Long to
+    // );
+    // void deleteByCaseKey(String caseKey);
+
+    List<Link> findByCaseId(Long caseId);
+    void deleteByCaseId(Long caseId);
 }
 

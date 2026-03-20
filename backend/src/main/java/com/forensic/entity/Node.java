@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "nodes")
 @Data
-@NoArgsConstructor
+@NoArgsConstructor 
 @AllArgsConstructor
 public class Node {
 
@@ -17,8 +17,8 @@ public class Node {
     @Column(name = "node_id")
     private Long nodeId;
 
-    @Column(name = "case_key", nullable = false, length = 50)
-    private String caseKey;
+    @Column(name = "case_id", nullable = false)
+    private Long caseId;
 
     @Column(name = "node_type", nullable = false, length = 10)
     private String nodeType; // "SUSPECT", "CLUE"

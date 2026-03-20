@@ -12,5 +12,6 @@ import java.util.List;
 public class GraphDto {
     private List<Node> nodes;
     private List<Link> links;
+    private Long caseId;
 }
 

@@ -88,6 +88,14 @@ public class CaseService {
         caseRepository.save(Case);
     }
 
+    @Transactional
+    public void reopenCase(Long caseId) {
+        Case Case = caseRepository.findById(caseId)
+            .orElseThrow(() -> new RuntimeException("Case not found"));
+        Case.setStatus("open");
+        caseRepository.save(Case);
+    }
+
     public Case getCaseDetails(Long caseId) {
         return caseRepository.findById(caseId)
             .orElseThrow(() -> new RuntimeException("Case not found"));

@@ -6,8 +6,8 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import './HomeScreen.css';
 
-import { getMyArchivedCases, createCase } from "../../services/CaseService";
-
+import { getMyArchivedCases, createCase, reopenCase } from "../../services/caseService";
+ 
 export default function ArchiveScreen() {
   const navigate = useNavigate();
   const [cases, setCases] = useState([]);
@@ -199,6 +199,18 @@ export default function ArchiveScreen() {
                     subTitle={caseItem.title}
                     className="case-card"
                   />
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      reopenCase(caseId);
+                    }}
+                    className="p-button p-component p-button-success mt-2"
+                    style={{ backgroundColor: 'white' }}
+                  >
+                    Reopen
+                  </button>
+
                 </div>
 
               );

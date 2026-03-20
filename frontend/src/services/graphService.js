@@ -1,18 +1,21 @@
 import axios from "axios";
 
-const API = "/api/graph";
+const API = "http://localhost:8443/api/graph";
 
-export const loadGraph = (caseKey) =>
-  axios.get(`${API}/${caseKey}`);
+export const loadGraph = (caseId) =>
+  axios.get(`${API}/${caseId}`);
 
-export const addNode = (caseKey, node) =>
-  axios.post(`${API}/${caseKey}/nodes`, node);
+export const saveGraph = (graph) =>
+  axios.post(`${API}/`, graph);
 
-export const addLink = (caseKey, link) =>
-  axios.post(`${API}/${caseKey}/links`, link);
+// export const addNode = (caseId, node) =>
+//   axios.post(`${API}/${caseId}/nodes`, node);
 
-export const deleteNode = (caseKey, nodeId) =>
-  axios.delete(`${API}/${caseKey}/nodes/${nodeId}`);
+// export const addLink = (caseId, link) =>
+//   axios.post(`${API}/${caseId}/links`, link);
 
-export const deleteLink = (linkId) =>
-  axios.delete(`${API}/${caseKey}/links/${linkId}`);
+// export const deleteNode = (caseId, nodeId) =>
+//   axios.delete(`${API}/${caseId}/nodes/${nodeId}`);
+
+// export const deleteLink = (linkId) =>
+//   axios.delete(`${API}/${caseId}/links/${linkId}`);

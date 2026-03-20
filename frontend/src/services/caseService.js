@@ -65,6 +65,11 @@ export const archiveCase = async (caseId) => {
   return response.data;
 };
 
+export const reopenCase = async (caseId) => {
+  const response = await axios.post(`${API}/reopen/${caseId}`);
+  return response.data;
+};
+
 export const updateCase = async (caseId, { caseKey, caseName, description }) => {
   const response = await axios.put(`${API}/update/${caseId}`, {
     caseKey,

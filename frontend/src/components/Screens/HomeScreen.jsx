@@ -208,6 +208,7 @@ export default function HomeScreen() {
                         .catch(err => console.error("Error archiving case:", err));
                     }}
                     className="p-button p-component p-button-danger archive-button"
+                    style={{ backgroundColor: 'white' }}
                   >
                     Archive
                   </button>
