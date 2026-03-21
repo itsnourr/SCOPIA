@@ -1,0 +1,57 @@
+# Forensic Crime Analysis Agent - Dependencies
+# Python 3.11+
+
+# Core Framework
+streamlit==1.29.0
+
+# LangChain & LLM
+langchain==0.1.20
+langchain-core==0.1.52
+langchain-google-genai==0.0.8
+langchain-openai==0.0.8
+google-generativeai==0.3.2
+openai==1.109.1
+
+# Vector Store & Embeddings
+chromadb==0.4.22
+sentence-transformers==2.2.2
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+
+# Security & Encryption
+cryptography==41.0.7
+pycryptodome==3.19.1
+
+# Image Processing & EXIF
+Pillow==10.1.0
+exifread==3.0.0
+piexif==1.1.3
+
+# Data Processing & Visualization
+pandas==2.1.4
+numpy==1.26.2
+plotly==5.18.0
+networkx==3.2.1
+
+# Environment & Configuration
+python-dotenv==1.0.0
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-asyncio==0.21.1
+
+# Code Quality
+black==23.12.1
+flake8==6.1.0
+mypy==1.7.1
+
+# Type Stubs
+types-Pillow==10.1.0.2
+types-psycopg2==2.9.21.16
+
+# PDF Generation
+reportlab==4.0.7
+
