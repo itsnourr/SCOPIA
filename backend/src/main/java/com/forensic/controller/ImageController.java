@@ -1,6 +1,7 @@
 package com.forensic.controller;
 
 import com.forensic.dto.ImageListItemResponse;
+import com.forensic.dto.ImageAddRequest;
 import com.forensic.dto.ImageUploadResponse;
 import com.forensic.dto.ImageVerifyResponse;
 import com.forensic.entity.Case;
@@ -117,6 +118,31 @@ public class ImageController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error uploading image: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addImage(@RequestBody ImageAddRequest request) {
+        try {
+            Optional<Case> caseOptional = caseRepository.findById(request.getCaseId());
+            if (caseOptional.isEmpty()) {
+                return ResponseEntity.badRequest().body("Case not found");
+            }
+
+            Image image = new Image();
+            image.setCaseEntity(caseOptional.get());
+            image.setFilename(request.getFilename());
+            image.setFilepath(request.getFilepath());
+            image.setIvBase64(request.getIvBase64());
+            image.setHmacBase64(request.getHmacBase64());
+
+            Image saved = imageRepository.save(image);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding image: " + e.getMessage());
         }
     }
 
@@ -258,6 +284,38 @@ public class ImageController {
         }
     }
 
+    @DeleteMapping("/{imageId}")
+    public ResponseEntity<?> deleteImage(@PathVariable Long imageId) {
+        try {
+            Optional<Image> imageOpt = imageRepository.findById(imageId);
+
+            if (imageOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Image not found");
+            }
+
+            Image image = imageOpt.get();
+            String filePath = image.getFilepath();
+
+            imageRepository.delete(image);
+
+            // delete file from disk
+            if (filePath != null) {
+                try {
+                    Files.deleteIfExists(Paths.get(filePath));
+                } catch (Exception e) {
+                    System.out.println("⚠️ Failed to delete file: " + e.getMessage());
+                }
+            }
+
+            return ResponseEntity.ok("Image deleted successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting image: " + e.getMessage());
+        }
+    }
+
     private String getContentType(String filename) {
         String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
         switch (extension) {
@@ -276,4 +334,5 @@ public class ImageController {
                 return "application/octet-stream";
         }
     }
+
 }

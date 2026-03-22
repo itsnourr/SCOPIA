@@ -1,0 +1,90 @@
+# Query: dao
+
+65 results - 11 files
+
+llm\app\agent\forensic_agent.py:
+  68: from app.db.dao import save_memory, get_memory, load_all_memory, save_chat_message, get_chat_history
+
+llm\app\agent\tools.py:
+  16: from app.db.dao import get_case, get_suspects_by_case, get_texts_by_case, get_images_by_case, get_analysis_results
+
+llm\app\db\__init__.py:
+   6:     - DAO functions: add_case, add_suspect, add_text, add_image, etc.
+  31: from app.db.dao import (
+
+llm\app\rag\ingest.py:
+  311:             from app.db.dao import add_timeline_event
+
+llm\app\tests\test_correlator.py:
+  26: from app.db.dao import get_analysis_results
+
+llm\app\tests\test_db.py:
+    3: Tests ORM models, initialization, and DAO operations
+   13: from app.db import dao
+   43:     monkeypatch.setattr(dao, "SessionLocal", SessionLocal)
+  160:     """Test adding a case via DAO"""
+  161:     case = dao.add_case(
+  175:     case = dao.add_case(title="Test Case", description="Test")
+  179:     retrieved = dao.get_case(case_id)
+  189:     dao.add_case(title="Case 1", description="First case")
+  190:     dao.add_case(title="Case 2", description="Second case")
+  191:     dao.add_case(title="Case 3", description="Third case")
+  194:     cases = dao.get_all_cases()
+  205:     """Test adding a suspect via DAO"""
+  206:     case = dao.add_case(title="Test Case", description="Test")
+  208:     suspect = dao.add_suspect(
+  223:     suspect = dao.add_suspect(
+  237:     case = dao.add_case(title="Test Case", description="Test")
+  239:     dao.add_suspect(case.id, "Suspect 1", "Profile 1")
+  240:     dao.add_suspect(case.id, "Suspect 2", "Profile 2")
+  242:     suspects = dao.get_suspects_by_case(case.id)
+  254:     """Test adding a text document via DAO"""
+  255:     case = dao.add_case(title="Test Case", description="Test")
+  257:     text = dao.add_text(
+  272:     case = dao.add_case(title="Test Case", description="Test")
+  274:     dao.add_text(case.id, "witness", "Statement 1", "Content 1")
+  275:     dao.add_text(case.id, "report", "Police Report", "Content 2")
+  277:     texts = dao.get_texts_by_case(case.id)
+  289:     """Test adding an encrypted image via DAO"""
+  290:     case = dao.add_case(title="Test Case", description="Test")
+  292:     image = dao.add_image(
+  309:     case = dao.add_case(title="Test Case", description="Test")
+  310:     image = dao.add_image(case.id, "test.jpg", "/path/test.enc", "a" * 32, "b" * 64)
+  313:     success = dao.update_image_analysis(
+  322:     updated = dao.get_images_by_case(case.id)[0]
+  333:     case = dao.add_case(title="Test Case", description="Test")
+  334:     suspect1 = dao.add_suspect(case.id, "Suspect 1", "Profile 1")
+  335:     suspect2 = dao.add_suspect(case.id, "Suspect 2", "Profile 2")
+  350:     success = dao.save_analysis_results(case.id, results)
+  355:     saved_results = dao.get_analysis_results(case.id)
+  368:     case = dao.add_case(title="Complete Case", description="Full test")
+  369:     suspect = dao.add_suspect(case.id, "Suspect", "Profile")
+  370:     text = dao.add_text(case.id, "witness", "Statement", "Content")
+  371:     image = dao.add_image(case.id, "photo.jpg", "/path.enc", "a" * 32, "b" * 64)
+  373:     dao.save_analysis_results(case.id, [{
+  380:     data = dao.get_case_data(case.id)
+  392:     """Test deleting a case via DAO"""
+  393:     case = dao.add_case(title="To Delete", description="Test")
+  397:     dao.add_suspect(case_id, "Suspect", "Profile")
+  400:     success = dao.delete_case(case_id)
+  404:     deleted_case = dao.get_case(case_id)
+  414:     case = dao.add_case(title="Test", description="Test")
+  417:     image1 = dao.add_image(case.id, "test.jpg", "/unique/path.enc", "a" * 32, "b" * 64)
+  421:     image2 = dao.add_image(case.id, "test2.jpg", "/unique/path.enc", "c" * 32, "d" * 64)
+  425:     images = dao.get_images_by_case(case.id)
+  431:     case = dao.get_case(99999)
+
+llm\app\tests\test_image_analyzer.py:
+  24: from app.db.dao import update_image_analysis, get_db_session
+
+llm\app\tools\evidence_correlator.py:
+  74: from app.db.dao import save_analysis_results
+
+llm\app\tools\image_analyzer.py:
+  55: from app.db.dao import update_image_analysis, get_db_session
+
+llm\app\tools\llm_polarity.py:
+  34: from app.db.dao import get_cached_polarity, save_polarity_cache
+
+llm\app\tools\timeline_engine.py:
+  25: from app.db.dao import get_timeline_events

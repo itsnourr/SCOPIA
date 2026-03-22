@@ -13,7 +13,8 @@ except ImportError:
 
     from langchain_core.tools import tool
 
-from app.db.dao import get_case, get_suspects_by_case, get_texts_by_case, get_images_by_case, get_analysis_results
+from app.db.dao import get_texts_by_case, get_analysis_results
+from app.db.services import get_case, get_suspects_by_case, get_images_by_case
 from app.tools.timeline_extractor import extract_timeline_events
 from app.rag.vectorstore import query_documents as _query_documents
 from app.agent.utils import format_context

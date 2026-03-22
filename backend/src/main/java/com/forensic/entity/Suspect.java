@@ -41,6 +41,10 @@ public class Suspect {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Lob
+    @Column(name = "metadata_json")
+    private String metadataJson;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

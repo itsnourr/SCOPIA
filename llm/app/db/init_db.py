@@ -76,13 +76,36 @@ def init_db(drop_existing: bool = False) -> bool:
         
 
         if drop_existing:
-            logger.warning("⚠️  Dropping all existing tables...")
-            Base.metadata.drop_all(engine)
-            logger.info("✅ Existing tables dropped")
+            logger.warning("⚠️  Dropping Python-managed tables only...")
+            
+            Base.metadata.drop_all(
+                engine,
+                tables=[
+                    TextDocument.__table__,
+                    AnalysisResult.__table__,
+                    PolarityCache.__table__,
+                    TimelineEvent.__table__,
+                    ChatMemory.__table__,
+                    ChatHistory.__table__,
+                ]
+            )
+            
+            logger.info("✅ Python tables dropped")
         
 
-        logger.info("Creating database tables...")
-        Base.metadata.create_all(engine)
+        logger.info("Creating database tables (Python-managed only)...")
+
+        Base.metadata.create_all(
+            engine,
+            tables=[
+                TextDocument.__table__,
+                AnalysisResult.__table__,
+                PolarityCache.__table__,
+                TimelineEvent.__table__,
+                ChatMemory.__table__,
+                ChatHistory.__table__,
+            ]
+        )
         
 
         with engine.connect() as conn:
@@ -93,8 +116,7 @@ def init_db(drop_existing: bool = False) -> bool:
             tables = [row[0] for row in result]
             
         expected_tables = [
-            'cases', 'suspects', 'text_documents', 'images', 'analysis_results', 
-            'polarity_cache', 'timeline_events', 'chat_memory', 'chat_history'
+            'text_documents', 'analysis_results', 'polarity_cache', 'timeline_events', 'chat_memory', 'chat_history'
         ]
         
         created_tables = [t for t in expected_tables if t in tables]
