@@ -26,3 +26,5 @@ dist-ssr
 # Large 3d files
 *.ply
 *.obj
+
+/backend/data/

@@ -3,19 +3,28 @@ import { useParams } from "react-router-dom";
 import { runColmap } from "../../services/colmapService";
 
 export default function PipelineScreen() {
-  const { caseKey } = useParams(); 
   const [status, setStatus] = useState("");
+  const [currentCaseId, setCurrentCaseId] = useState(null);
   const mountRef = useRef(null);
+ 
+  const { caseId } = useParams();
+
+  useEffect(() => {
+      // read caseid from route, we are at /2/pipeline 
+      const pathParts = window.location.pathname.split("/");
+      const caseId = pathParts[pathParts.length - 2];
+      setCurrentCaseId(caseId);
+  }, []);
 
   const handleRunColmap = async () => {
-    if (!caseKey) {
-      setStatus("Missing case key in URL");
+    if (!currentCaseId) {
+      setStatus("Missing case ID in URL");
       return;
     }
 
     setStatus("Running Colmap...");
     try {
-      const response = await runColmap(caseKey);
+      const response = await runColmap(currentCaseId);
       setStatus(response.data);
     } catch (error) {
       setStatus(error.response?.data || "Error running Colmap");

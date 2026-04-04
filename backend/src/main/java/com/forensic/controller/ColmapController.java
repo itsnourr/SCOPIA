@@ -1,7 +1,6 @@
 package com.forensic.controller;
 
 import com.forensic.entity.Image;
-import com.forensic.repository.CaseRepository;
 import com.forensic.repository.ImageRepository;
 import com.forensic.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,35 +27,24 @@ public class ColmapController {
     @Autowired
     private ImageRepository imageRepository;
 
-    @Autowired
-    private CaseRepository caseRepository;
-
-    // Base directory where all cases are stored, e.g., "data/cases"
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    /**
-     * Runs the Colmap PS1 pipeline for a given case.
-     * Temporarily decrypts all images into raw_images, runs pipeline, then deletes raw_images.
-     */
     @GetMapping("/run")
-    public ResponseEntity<String> runColmapPipeline(@RequestParam("caseKey") String caseKey) {
-        if (caseKey == null || caseKey.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("caseKey parameter is required");
+    public ResponseEntity<String> runColmapPipeline(@RequestParam("caseId") Long caseId) {
+        if (caseId == null) {
+            return ResponseEntity.badRequest().body("caseId parameter is required");
         }
 
         try {
             // Case folder
-            File caseFolder = new File(uploadDir, caseKey);
+            String caseIdAsString = String.valueOf(caseId);
+            File caseFolder = new File(uploadDir, caseIdAsString);
             File rawFolder = new File(caseFolder, "raw_images");
 
             // Ensure raw_images folder exists
             if (!rawFolder.exists()) rawFolder.mkdirs();
 
-            Long caseId = caseRepository.findByCaseKey(caseKey)
-                    .orElseThrow(() -> new RuntimeException("Case not found for key: " + caseKey))
-                    .getCaseId();
-            // Decrypt all images for this case
             List<Image> images = imageRepository.findByCaseEntity_CaseId(caseId);
             for (Image img : images) {
                 byte[] decrypted = cryptoService.decrypt(img.getFilepath());
@@ -78,8 +66,10 @@ public class ColmapController {
                     "-ExecutionPolicy", "Bypass",
                     "-File",
                     scriptFile.getAbsolutePath(),
-                    "-caseKey",
-                    caseKey
+                    "-caseId",
+                    caseIdAsString,
+                     "-uploadDir",
+                    uploadDir
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
