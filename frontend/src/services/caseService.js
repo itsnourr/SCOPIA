@@ -10,6 +10,8 @@ export const getCaseById = async (caseId) => {
 
 export const getCaseKeyById = async (caseId) => {
   const response = await axios.get(`${API}/${caseId}`);
+  console.log("Fetched case details for ID:", caseId, response.data);
+  console.log("CASE KEY:", response.data.caseKey);
   return response.data.caseKey;
 };
 

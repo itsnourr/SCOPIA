@@ -16,7 +16,7 @@ import {
 } from "../../services/teamService";
 
 import {
-  getAllActiveCases
+  getAllCases, getCaseKeyById
 } from "../../services/caseService";
 
 import "../../App.css"
@@ -31,6 +31,7 @@ export default function TeamsTable() {
 
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState(null);
+  const [caseMap, setCaseMap] = useState({});
   const [teamMembers, setTeamMembers] = useState([]);
   const [usernames, setUsernames] = useState({});
 
@@ -43,31 +44,44 @@ export default function TeamsTable() {
   }, []);
 
   const loadTeams = async () => {
-  setLoading(true);
+    setLoading(true);
 
-  const [casesRes, teamsRes] = await Promise.all([
-    getAllActiveCases(),
-    getAllTeams()
-  ]);
+    const [casesRes, teamsRes] = await Promise.all([
+      getAllCases(),
+      getAllTeams()
+    ]);
+    // let's add console logs for debugging
+    const cases = casesRes;
+    const teams = teamsRes.data;
+    console.log("Fetched cases:", cases);
+    console.log("Fetched teams:", teams);
 
-  const cases = casesRes.data;
-  const teams = teamsRes.data;
+    // Map caseId → caseKey
+    const caseMap = {};
+    cases.forEach((c) => {
+      caseMap[c.caseId] = c.caseKey || c.caseId;
+    });
+    setCaseMap(caseMap);
+    console.log("CASE MAP:", caseMap);
 
-  // Map caseId → team
-  const teamMap = new Map(
-    teams.map((t) => [t.caseId, t.userIds])
-  );
+    // Map caseId → team
+    const teamMap = new Map(
+      teams.map((t) => [t.caseId, t.userIds])
+    );
 
-  // Ensure ALL cases exist, even with empty teams
-  const merged = cases.map((c) => ({
-    caseId: c.caseId,
-    userIds: teamMap.get(c.caseId) || []
-  }));
+    // Ensure ALL cases exist, even with empty teams
+    const merged = cases.map((c) => ({
+      caseId: c.caseId,
+      userIds: teamMap.get(c.caseId) || []
+    }));
 
-  setTeams(merged);
-  setLoading(false);
-};
+    setTeams(merged);
+    setLoading(false);
+  };
 
+  const caseTemplate = (rowData) => {
+    return caseMap[rowData.caseId] || rowData.caseId;
+  };
 
   // ---------------- Team Dialog ----------------
 
@@ -144,13 +158,14 @@ export default function TeamsTable() {
     <>
     <div className="clue-table-container">
       <DataTable
+        key={JSON.stringify(caseMap)}   
         value={teams}
         paginator
         rows={10}
         loading={loading}
         dataKey="caseId"
       >
-        <Column field="caseId" header="Case ID" />
+        <Column header="Case" body={caseTemplate} style={{ width: "120px" }}/>
         <Column
           header="Members"
           body={membersTemplate}

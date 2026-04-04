@@ -16,6 +16,8 @@ import {
   deleteClue
 } from "../../services/clueService";
 
+import { mapUserIdToUsername } from "../../services/userService";
+
 export default function CluesTable() {
 
   // ---------------- State ----------------
@@ -38,6 +40,8 @@ export default function CluesTable() {
   const [newClue, setNewClue] = useState(emptyClue());
   const [selectedUserId, setSelectedUserId] = useState("");
 
+  const [userMap, setUserMap] = useState({}); // userId -> username
+
   // ---------------- Effects ----------------
 
   useEffect(() => {
@@ -46,14 +50,33 @@ export default function CluesTable() {
 
   const loadClues = async () => {
     setLoading(true);
-    // const caseId = window.location.pathname.split("/").pop();
-    // the path ends with /caseid/clues, so before the last 
+
     const pathParts = window.location.pathname.split("/");
     const caseId = pathParts[pathParts.length - 2];
+
     const res = await getCluesByCaseId(caseId);
-    console.log(res.data);
-    setClues(res.data);
+    const cluesData = res.data;
+    setClues(cluesData);
+    const uniqueUserIds = [...new Set(cluesData.map(c => c.pickerId).filter(Boolean))];
+    const map = {};
+    await Promise.all(
+      uniqueUserIds.map(async (id) => {
+        try {
+          const username = await mapUserIdToUsername(id);
+          map[id] = username;
+        } catch {
+          map[id] = "Unknown";
+          console.log("Fallback to id")
+        }
+      })
+    );
+    // console.log("USER MAP:", map);
+    setUserMap(map);
     setLoading(false);
+  };
+
+  const pickerTemplate = (rowData) => {
+    return userMap[rowData.pickerId] || rowData.pickerId;
   };
 
   // ---------------- CRUD ----------------
@@ -260,6 +283,7 @@ export default function CluesTable() {
 
       <div className="clue-table-container">
         <DataTable
+          key={JSON.stringify(userMap)}
           value={clues}
           paginator
           rows={5}
@@ -269,7 +293,7 @@ export default function CluesTable() {
           <Column field="clueId" header="ID" style={{ width: "40px" }} />
           <Column field="type" header="Type" />
           <Column field="category" header="Category" />
-          <Column field="pickerId" header="Picker" />
+          <Column header="Picker" body={pickerTemplate} />
           <Column field="clueDesc" header="Description" className="clue-desc-column" />
           <Column field="coordinates" header="Coordinates" />
           <Column body={editTemplate} style={{ width: "4rem" }} />
