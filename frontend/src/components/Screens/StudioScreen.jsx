@@ -52,7 +52,7 @@ export default function StudioScreen() {
 
     // Load PLY dynamically
     const loader = new PLYLoader();
-    const plyUrl = `/cases/${caseKey}/meshed-poisson.ply`;
+    const plyUrl = `/api/scene/${caseKey}/model`;
     
     loader.load(
       plyUrl,

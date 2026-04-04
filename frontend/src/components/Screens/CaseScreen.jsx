@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 
-import { getCaseById } from "../../services/caseService";
+import { getCaseById, updateCaseDetails } from "../../services/caseService";
 import { getTeamByCaseId } from "../../services/teamService";
 import { mapUserIdToUsernameByBulk } from "../../services/userService";
 
@@ -10,6 +10,8 @@ export default function CaseScreen() {
   const [currentCaseid, setCurrentCaseId] = React.useState(-1);
   const [caseData, setCaseData] = React.useState(null);
   const [teamMembers, setTeamMembers] = React.useState([]);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [formData, setFormData] = React.useState({});
 
   const labelStyle = {
     color: "#9ca3af",
@@ -25,6 +27,44 @@ export default function CaseScreen() {
     color: "#f3f4f6",
   };
 
+  const refreshCase = async () => {
+    try {
+      const data = await getCaseById(currentCaseid);
+      setCaseData(data);
+      setFormData({
+        location: data.location || "",
+        coordinates: data.coordinates || "",
+        reportDate: data.reportDate || "",
+        crimeTime: data.crimeTime || ""
+      });
+    } catch (error) {
+      console.error("Error refreshing case:", error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const payload = {
+        location: formData.location,
+        coordinates: formData.coordinates,
+        reportDate: formData.reportDate
+          ? `${formData.reportDate}T00:00:00`
+          : null,
+        crimeTime: formData.crimeTime
+          ? `1970-01-01T${formData.crimeTime}:00`
+          : null
+      };
+
+      await updateCaseDetails(currentCaseid, payload);
+
+      setIsEditing(false);
+      await refreshCase();
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     // read caseid from route, we are at /case/4 might contain /info at the end
     const pathParts = window.location.pathname.split("/");
@@ -35,6 +75,12 @@ export default function CaseScreen() {
       try {
         const data = await getCaseById(caseId);
         setCaseData(data);
+        setFormData({
+          location: data.location || "",
+          coordinates: data.coordinates || "",
+          reportDate: data.reportDate || "",
+          crimeTime: data.crimeTime || ""
+        });
       }
       catch (error) {
         console.error("Error fetching case data:", error);
@@ -118,29 +164,83 @@ export default function CaseScreen() {
             {caseData?.status}
           </span>
         </div>
-
           <div>
             <div style={labelStyle}>Location</div>
-            <div style={valueStyle}>{caseData?.location}</div>
+
+            {isEditing ? (
+              <input
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+              />
+            ) : (
+              <div style={valueStyle}>{caseData?.location}</div>
+            )}
           </div>
 
           <div>
             <div style={labelStyle}>Coordinates</div>
-            <div style={valueStyle}> 
-              ({caseData?.coordinates})
-            </div>
+
+            {isEditing ? (
+              <input
+                value={formData.coordinates}
+                onChange={(e) =>
+                  setFormData({ ...formData, coordinates: e.target.value })
+                }
+              />
+            ) : (
+              <div style={valueStyle}>
+                {caseData?.coordinates ? `(${caseData.coordinates})` : "—"}
+              </div>
+            )}
           </div>
 
           <div>
             <div style={labelStyle}>Report Date</div>
-            <div style={valueStyle}>{caseData?.reportDate?.split("T")[0]}</div>
+
+            {isEditing ? (
+              <input
+                type="date"
+                value={formData.reportDate?.split("T")[0] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, reportDate: e.target.value })
+                }
+              />
+            ) : (
+              <div style={valueStyle}>
+                {caseData?.reportDate?.split("T")[0]}
+              </div>
+            )}
           </div>
 
           <div>
             <div style={labelStyle}>Crime Time</div>
-            <div style={valueStyle}>{caseData?.crimeTime?.split("T")[1]?.split(".")[0]}</div>
+
+            {isEditing ? (
+              <input
+                type="time"
+                value={formData.crimeTime?.split("T")[1]?.slice(0, 5) || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, crimeTime: e.target.value })
+                }
+              />
+            ) : (
+              <div style={valueStyle}>
+                {caseData?.crimeTime?.split("T")[1]?.split(".")[0]}
+              </div>
+            )}
           </div>
+
         </div>
+
+        {!isEditing && (
+          <button onClick={() => setIsEditing(true)}>Edit</button>
+        )}
+
+        {isEditing && (
+          <button onClick={handleSave}>Save</button>
+        )}
 
         {/* Team Members */}
         <div>

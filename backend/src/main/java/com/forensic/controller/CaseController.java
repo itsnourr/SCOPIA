@@ -1,5 +1,6 @@
 package com.forensic.controller;
 
+import com.forensic.dto.CaseDetailsUpdateRequest;
 import com.forensic.entity.Case;
 import com.forensic.service.CaseService;
 import com.forensic.repository.CaseRepository;
@@ -140,6 +141,30 @@ public class CaseController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating case: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/details/{id}")
+    public ResponseEntity<?> updateCaseDetails(
+            @PathVariable Long id,
+            @RequestBody CaseDetailsUpdateRequest request) {
+
+        try {
+            Case existingCase = caseRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Case not found with id: " + id));
+
+            // Only allowed fields
+            existingCase.setLocation(request.getLocation());
+            existingCase.setCoordinates(request.getCoordinates());
+            existingCase.setReportDate(request.getReportDate());
+            existingCase.setCrimeTime(request.getCrimeTime());
+
+            Case savedCase = caseRepository.save(existingCase);
+            return ResponseEntity.ok(savedCase);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating case details: " + e.getMessage());
         }
     }
 }

@@ -9,25 +9,24 @@ import './GalleryScreen.css';
 
 export default function GalleryScreen() {
 
-  const { caseKey } = useParams(); // TODO: refactor caseKey to key
+  const { caseKey } = useParams(); 
   const [images, setImages] = useState([]);
-  const [imageMetadata, setImageMetadata] = useState([]); // (kept for legacy API approach)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
   const fileInputRef = useRef(null);
   const toast = useRef(null);
 
-  /*
-  ==============================
-  OLD BACKEND API APPROACH (COMMENTED OUT)
-  ==============================
-
+  /**
+   * Fetch images from backend
+   */
   const fetchImages = async () => {
     if (!caseKey) {
-      setError('No case caseKey provided');
+      setError("No case key provided");
       setLoading(false);
       return;
     }
@@ -36,84 +35,47 @@ export default function GalleryScreen() {
       setLoading(true);
       setError(null);
 
-      const listResponse = await fetch(`/api/image/list/${caseKey}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await fetch(`http://localhost:8443/api/image/list/${caseKey}`);
 
-      if (!listResponse.ok) {
-        throw new Error(`Failed to fetch image list! status: ${listResponse.status}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch images (status: ${response.status})`);
       }
 
-      const imageListData = await listResponse.json();
+      const data = await response.json();
 
-      const imageItems = Array.isArray(imageListData)
-        ? imageListData.filter(item => item.viewUrl != null)
-        : [];
-
-      setImageMetadata(imageItems);
-
-      const imageUrls = imageItems.map(item =>
-        item.viewUrl.replace(/^https?:\/\/[^/]+/, '')
-      );
+      // Extract view URLs (strip domain if present)
+      const imageUrls = (data || [])
+        .filter(item => item.viewUrl)
+        .map(item =>
+          "http://localhost:8443" + item.viewUrl
+        );
 
       setImages(imageUrls);
+
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-  */
 
-  /*
-  ==============================
-  NEW PUBLIC FOLDER APPROACH
-  Predictable naming: 1.jpg, 2.jpg, 3.jpg...
-  Folder: /public/cases/{caseKey}/images/
-  ==============================
-  */
-
+  /**
+   * Load images on mount / case change
+   */
   useEffect(() => {
-    const loadImages = async () => {
-      if (!caseKey) {
-        setError("No case key provided");
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      const MAX_IMAGES = 100; // Safe upper bound
-      const validImages = [];
-
-      for (let i = 1; i <= MAX_IMAGES; i++) {
-        const url = `/cases/${caseKey}/images/${i}.JPG`;
-
-        try {
-          const res = await fetch(url, { method: "HEAD" });
-          if (res.ok) {
-            validImages.push(url);
-          } else {
-            break; // Stop when numbering ends
-          }
-        } catch {
-          break;
-        }
-      }
-
-      setImages(validImages);
-      setLoading(false);
-    };
-
-    loadImages();
+    fetchImages();
   }, [caseKey]);
 
+  /**
+   * Trigger file input
+   */
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
+  /**
+   * Upload image
+   */
   const handleFileSelect = async (event) => {
     const file = event.target.files[0];
     if (!file || !caseKey) return;
@@ -124,24 +86,25 @@ export default function GalleryScreen() {
       setUploadSuccess(false);
 
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('caseId', caseKey);
+      formData.append("file", file);
+      formData.append("caseId", caseKey);
 
-      const response = await fetch('/api/image/upload', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8443/api/image/upload", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error(`Upload failed! status: ${response.status}`);
+        throw new Error(`Upload failed (status: ${response.status})`);
       }
 
       setUploadSuccess(true);
 
-      // Optional: reload predictable list
-      window.location.reload();
+      // Refresh images without reloading page
+      await fetchImages();
 
-      event.target.value = '';
+      // Reset input
+      event.target.value = "";
 
       setTimeout(() => {
         setUploadSuccess(false);
@@ -149,12 +112,15 @@ export default function GalleryScreen() {
 
     } catch (err) {
       setUploadError(err.message);
-      event.target.value = '';
+      event.target.value = "";
     } finally {
       setUploading(false);
     }
   };
 
+  /**
+   * Galleria item
+   */
   const itemTemplate = (item) => (
     <img
       src={item}
@@ -163,6 +129,9 @@ export default function GalleryScreen() {
     />
   );
 
+  /**
+   * Thumbnail
+   */
   const thumbnailTemplate = (item) => (
     <img
       src={item}
@@ -173,19 +142,22 @@ export default function GalleryScreen() {
 
   return (
     <div className="p-4">
-      <Toast ref={toast} />
 
-      {/* <h1 className="screen-title" style={{ paddingBottom: "0px", marginBottom: "0px" }}>Gallery</h1> */}
+      <Toast ref={toast} />
 
       {uploadSuccess && (
         <p className="text-green-500 mb-2">Image uploaded successfully!</p>
       )}
+
       {uploadError && (
         <p className="text-red-500 mb-2">Upload error: {uploadError}</p>
       )}
 
       {loading && <p>Loading images...</p>}
-      {error && <p className="text-red-500">Error loading images: {error}</p>}
+
+      {error && (
+        <p className="text-red-500">Error: {error}</p>
+      )}
 
       {!loading && !error && images.length === 0 && (
         <p>No images found for this case.</p>
@@ -208,23 +180,23 @@ export default function GalleryScreen() {
 
       <div className="flex justify-between items-center mb-4">
 
-        <div>
-          <button
-            onClick={handleUploadClick}
-            className="p-button p-component p-button-primary"
-            disabled={uploading}
-            style={{ backgroundColor: "grey", color: "white", marginTop: "0px"}}
-          >
-            {uploading ? 'Uploading...' : 'Upload Image'}
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            accept="image/*"
-            onChange={handleFileSelect}
-          />
-        </div>
+        <button
+          onClick={handleUploadClick}
+          className="p-button p-component p-button-primary"
+          disabled={uploading}
+          style={{ backgroundColor: "grey", color: "white" }}
+        >
+          {uploading ? "Uploading..." : "Upload Image"}
+        </button>
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept="image/*"
+          onChange={handleFileSelect}
+        />
+
       </div>
 
     </div>

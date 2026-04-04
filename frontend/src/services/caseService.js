@@ -83,3 +83,18 @@ export const updateCase = async (caseId, { caseKey, caseName, description }) => 
   });
   return response.data;
 };
+
+export const updateCaseDetails = async (caseId, {
+  location,
+  coordinates,
+  reportDate,
+  crimeTime
+}) => {
+  const response = await axios.put(`${API}/update/details/${caseId}`, {
+    location,
+    coordinates,
+    reportDate,
+    crimeTime
+  });
+  return response.data;
+};

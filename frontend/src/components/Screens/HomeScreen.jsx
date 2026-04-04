@@ -198,22 +198,23 @@ export default function HomeScreen() {
                     title={caseItem.caseKey}
                     subTitle={caseItem.title}
                     className="case-card"
+                    footer={
+                      <div className="case-card-footer">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            archiveCase(caseId)
+                              .then(() => fetchCases())
+                              .catch(err => console.error(err));
+                          }}
+                          className="archive-button"
+                        >
+                          Archive
+                        </button>
+                      </div>
+                    }
                   />
-                  {/* arhive button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      archiveCase(caseId)
-                        .then(() => fetchCases())
-                        .catch(err => console.error("Error archiving case:", err));
-                    }}
-                    className="p-button p-component p-button-danger archive-button"
-                    style={{ backgroundColor: 'white' }}
-                  >
-                    Archive
-                  </button>
                 </div>
-
               );
             })
           )}
