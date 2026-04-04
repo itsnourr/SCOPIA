@@ -116,7 +116,7 @@ export default function HomeScreen() {
         style={{ width: '50vw' }}
         onHide={() => setShowCreateDialog(false)}
         footer={
-          <div>
+          <div style={{ border: "none", paddingTop: "20px" }}>
             <button
               onClick={() => setShowCreateDialog(false)}
               className="p-button p-component p-button-secondary"
@@ -134,7 +134,7 @@ export default function HomeScreen() {
           </div>
         }
       >
-        <div className="mb-3">
+        <div className="mb-3" style={{ marginBottom: "24px"}}>
           <label htmlFor="caseKey" className="block mb-2">
             Case Key *
           </label>
@@ -144,6 +144,7 @@ export default function HomeScreen() {
             onChange={(e) => setCaseKey(e.target.value)}
             placeholder="e.g. GHI-003"
             className="w-full"
+            style={{ marginLeft: "12px" }}
           />
         </div>
 
@@ -156,9 +157,10 @@ export default function HomeScreen() {
               onChange={(e) => setCaseName(e.target.value)}
               placeholder="Enter case name"
               className="w-full"
+              style={{ marginTop: "6px" }}
             />
           </div>
-          <div className="mb-3">
+          <div className="mb-3" style={{ marginTop: "24px" }}>
             <label htmlFor="caseDescription" className="block mb-2">Description</label>
             <InputTextarea
               id="caseDescription"
@@ -167,6 +169,7 @@ export default function HomeScreen() {
               placeholder="Enter case description (optional)"
               rows={4}
               className="w-full"
+              style={{ marginTop: "6px" }}
             />
           </div>
         </div>

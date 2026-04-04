@@ -180,7 +180,7 @@ export default function TeamsTable() {
     </div>
       {/* Team Management Dialog */}
       <Dialog
-        header={`Manage Team – Case ${selectedCaseId}`}
+        header={`Manage Team`}
         visible={dialogVisible}
         style={{ width: "450px" }}
         onHide={closeDialog}
