@@ -27,6 +27,10 @@
   overflow-wrap: anywhere;
 }
 
+.rover-row {
+  background: rgba(0, 120, 255, 0.08) !important;
+  border-left: 3px solid #4da3ff;
+}
 
 /* Header */
 .clue-table-container .p-datatable-thead > tr > th {

@@ -1,15 +1,33 @@
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import classNames from "classnames";
 import "./sidebar.css"; 
+import { getCaseKeyById } from "../../services/caseService";
 
 
 export default function CaseSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [caseKey, setCaseKey] = useState(null);
+  const pathParts = location.pathname.split("/");
+  const caseId = pathParts[2]; 
+
+  useEffect(() => {
+    const fetchCaseKey = async () => {
+      try {
+        const res = await getCaseKeyById(caseId);
+        setCaseKey(res);
+      } catch (err) {
+        console.error("Failed to fetch case key", err);
+        setCaseKey(`Case ${caseId}`); // fallback
+      }
+    };
+
+    if (caseId) fetchCaseKey();
+  }, [caseId]);
 
   const isActive = (path) => location.pathname.endsWith(path);
 
@@ -116,7 +134,11 @@ export default function CaseSidebar() {
         onClick={() => setCollapsed(!collapsed)}
         style={{ alignSelf: collapsed ? "center" : "flex-end" }}
       />
-
+      {!collapsed && (
+        <div className="case-key-header">
+          {caseKey}
+        </div>
+      )}
       <Menu model={items} style={{ width: "100%" }} />
     </div>
   );

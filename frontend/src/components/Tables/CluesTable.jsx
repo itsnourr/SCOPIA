@@ -48,6 +48,13 @@ export default function CluesTable() {
     loadClues();
   }, []);
 
+  // reload clues on save
+  useEffect(() => {
+    if (!dialogVisible) {
+      loadClues();
+    }
+  }, [dialogVisible]);
+
   const loadClues = async () => {
     setLoading(true);
 
@@ -71,12 +78,19 @@ export default function CluesTable() {
       })
     );
     // console.log("USER MAP:", map);
+    map[0] = "✨Rover";
     setUserMap(map);
     setLoading(false);
   };
 
   const pickerTemplate = (rowData) => {
     return userMap[rowData.pickerId] || rowData.pickerId;
+  };
+
+  const rowClassName = (rowData) => {
+    return rowData.pickerId === 0
+      ? "rover-row"
+      : "";
   };
 
   // ---------------- CRUD ----------------
@@ -289,6 +303,7 @@ export default function CluesTable() {
           rows={5}
           loading={loading}
           dataKey="clueId"
+          rowClassName={rowClassName}
         >
           <Column field="clueId" header="ID" style={{ width: "40px" }} />
           <Column field="type" header="Type" />
